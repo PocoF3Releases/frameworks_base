@@ -66,6 +66,8 @@ public class FlashlightControllerImpl implements FlashlightController {
     private static final String ACTION_FLASHLIGHT_CHANGED =
         "com.android.settings.flashlight.action.FLASHLIGHT_CHANGED";
 
+    private static final long TORCH_REINIT_DELAY_MS = 1500;
+
     private final Context mContext;
     private final CameraManager mCameraManager;
     private final Handler mHandler;
@@ -83,6 +85,8 @@ public class FlashlightControllerImpl implements FlashlightController {
     private boolean mFlashlightEnabled;
     @GuardedBy("this")
     private boolean mTorchAvailable;
+    @GuardedBy("this")
+    private int mTorchRequestGeneration;
 
     private final AtomicReference<String> mCameraId;
     private final AtomicBoolean mInitted = new AtomicBoolean(false);
@@ -138,8 +142,12 @@ public class FlashlightControllerImpl implements FlashlightController {
                 CameraCharacteristics c = mCameraManager.getCameraCharacteristics(id);
                 Boolean flashAvailable = c.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                 if (flashAvailable != null && flashAvailable) {
-                    mDefaultLevel = c.get(CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL);
-                    mMaxLevel = c.get(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL);
+                    Integer defaultLevel = c.get(
+                            CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL);
+                    Integer maxLevel = c.get(
+                            CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL);
+                    mDefaultLevel = defaultLevel != null ? defaultLevel : 1;
+                    mMaxLevel = maxLevel != null ? maxLevel : 1;
                     mStrengthControlSupported = (mMaxLevel > 1);
                     mCameraId.set(id);
 
@@ -150,7 +158,8 @@ public class FlashlightControllerImpl implements FlashlightController {
                                 (float) mDefaultLevel / mMaxLevel,
                                 UserHandle.USER_CURRENT);
                         synchronized (this) {
-                            mCurrentLevel = Math.max(1, Math.round(percent * mMaxLevel));
+                            mCurrentLevel = Math.max(1,
+                                    Math.min(mMaxLevel, Math.round(percent * mMaxLevel)));
                         }
                         if (DEBUG) Log.d(TAG, "Restored torch level: " + mCurrentLevel);
                     }
@@ -168,35 +177,78 @@ public class FlashlightControllerImpl implements FlashlightController {
 
     public void setFlashlight(boolean enabled) {
         if (!mHasFlashlight) return;
-        if (mCameraId.get() == null) {
-            mExecutor.execute(this::tryInitCamera);
+        final int generation;
+        synchronized (this) {
+            generation = ++mTorchRequestGeneration;
         }
         mExecutor.execute(() -> {
-            if (mCameraId.get() == null) return;
-            synchronized (this) {
-                if (mFlashlightEnabled != enabled) {
-                    try {
-                        if (enabled) {
-                            if (mStrengthControlSupported) {
-                                int level = (mCurrentLevel > 0) ? mCurrentLevel : mDefaultLevel;
-                                level = Math.max(1, Math.min(level, mMaxLevel));
-                                if (DEBUG) Log.d(TAG, "Turning on torch with level " + level);
-                                mCameraManager.turnOnTorchWithStrengthLevel(mCameraId.get(), level);
-                            } else {
-                                if (DEBUG) Log.d(TAG, "Turning on torch (no strength support)");
-                                mCameraManager.setTorchMode(mCameraId.get(), true);
-                            }
-                        } else {
-                            if (DEBUG) Log.d(TAG, "Turning off torch");
-                            mCameraManager.setTorchMode(mCameraId.get(), false);
-                        }
-                    } catch (CameraAccessException e) {
-                        Log.e(TAG, "Couldn't set torch mode", e);
-                        dispatchError();
-                    }
-                }
-            }
+            tryInitCamera();
+            setFlashlightInternal(enabled, generation, false);
         });
+    }
+
+    @WorkerThread
+    private void setFlashlightInternal(boolean enabled, int generation, boolean retry) {
+        synchronized (this) {
+            if (generation != mTorchRequestGeneration) return;
+            String cameraId = mCameraId.get();
+            if (cameraId == null) {
+                if (!retry) {
+                    scheduleTorchRetry(enabled, generation);
+                } else {
+                    dispatchError();
+                }
+                return;
+            }
+            try {
+                if (enabled && mStrengthControlSupported) {
+                    int level = (mCurrentLevel > 0) ? mCurrentLevel : mDefaultLevel;
+                    level = Math.max(1, Math.min(level, mMaxLevel));
+                    mCameraManager.turnOnTorchWithStrengthLevel(cameraId, level);
+                } else {
+                    mCameraManager.setTorchMode(cameraId, enabled);
+                }
+            } catch (CameraAccessException | IllegalArgumentException e) {
+                handleTorchFailure(e, enabled, generation, retry);
+            }
+        }
+    }
+
+    private void handleTorchFailure(Exception error, boolean enabled, int generation,
+            boolean retry) {
+        synchronized (this) {
+            if (generation != mTorchRequestGeneration) return;
+            Log.e(TAG, "Couldn't update torch", error);
+            boolean invalidCamera = error instanceof IllegalArgumentException;
+            boolean transientFailure = invalidCamera;
+            if (error instanceof CameraAccessException) {
+                int reason = ((CameraAccessException) error).getReason();
+                transientFailure = reason == CameraAccessException.CAMERA_IN_USE
+                        || reason == CameraAccessException.MAX_CAMERAS_IN_USE
+                        || reason == CameraAccessException.CAMERA_DISCONNECTED;
+            }
+            if (invalidCamera) {
+                mCameraManager.unregisterTorchCallback(mTorchCallback);
+                mCameraId.set(null);
+            }
+            if (transientFailure && !retry) {
+                scheduleTorchRetry(enabled, generation);
+            } else {
+                dispatchError();
+            }
+        }
+    }
+
+    private void scheduleTorchRetry(boolean enabled, int generation) {
+        // Retry once. A newer on/off request cancels this intent, so recovery cannot
+        // turn the light back on after the user has switched it off.
+        mHandler.postDelayed(() -> mExecutor.execute(() -> {
+            synchronized (this) {
+                if (generation != mTorchRequestGeneration) return;
+            }
+            tryInitCamera();
+            setFlashlightInternal(enabled, generation, true);
+        }), TORCH_REINIT_DELAY_MS);
     }
 
     public boolean hasFlashlight() {
@@ -245,41 +297,36 @@ public class FlashlightControllerImpl implements FlashlightController {
 
         final int requestedLevel = level;
 
-        mHandler.post(() -> {
+        mExecutor.execute(() -> {
             if (mCameraId.get() == null) return;
 
             int clampedLevel;
             boolean wasEnabled;
+            int generation;
             synchronized (this) {
                 clampedLevel = Math.max(1, Math.min(requestedLevel, mMaxLevel));
                 if (mCurrentLevel == clampedLevel && !mFlashlightEnabled) return;
                 mCurrentLevel = clampedLevel;
                 wasEnabled = mFlashlightEnabled;
+                generation = mTorchRequestGeneration;
             }
 
+            // Save the selection even if the HAL is temporarily unavailable. Camera
+            // rediscovery restores this value before retrying the strength request.
+            float percent = Math.max(0.01f, (float) clampedLevel / mMaxLevel);
+            Settings.System.putFloatForUser(
+                    mContext.getContentResolver(),
+                    FLASHLIGHT_BRIGHTNESS_SETTING,
+                    percent,
+                    UserHandle.USER_CURRENT);
+            dispatchStrengthChanged(clampedLevel);
+
             try {
-                if (DEBUG) Log.d(TAG, "Setting torch strength level: " + clampedLevel + 
-                        ", wasEnabled: " + wasEnabled);
-                
                 if (wasEnabled) {
                     mCameraManager.turnOnTorchWithStrengthLevel(mCameraId.get(), clampedLevel);
                 }
-
-                dispatchStrengthChanged(clampedLevel);
-
-                mExecutor.execute(() -> {
-                    float percent = Math.max(0.01f, (float) clampedLevel / mMaxLevel);
-                    Settings.System.putFloatForUser(
-                            mContext.getContentResolver(),
-                            FLASHLIGHT_BRIGHTNESS_SETTING,
-                            percent,
-                            UserHandle.USER_CURRENT
-                    );
-                });
-
-            } catch (CameraAccessException e) {
-                Log.e(TAG, "Couldn't set torch strength level", e);
-                dispatchError();
+            } catch (CameraAccessException | IllegalArgumentException e) {
+                handleTorchFailure(e, wasEnabled, generation, false);
             }
         });
     }
@@ -356,7 +403,7 @@ public class FlashlightControllerImpl implements FlashlightController {
     }
 
     private void dispatchError() {
-        dispatchListeners(DISPATCH_CHANGED, false /* argument (ignored) */);
+        dispatchListeners(DISPATCH_ERROR, false /* argument (ignored) */);
     }
 
     private void dispatchAvailabilityChanged(boolean available) {
