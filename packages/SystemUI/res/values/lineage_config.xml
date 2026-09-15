@@ -75,8 +75,9 @@
     <!-- If not zero, limits the internal screen recorder's framerate to the set value. -->
     <integer name="config_screenRecorderMaxFramerate">0</integer>
 
-    <!-- Allow the internal recorder to use the codec full frame-rate capability and
-         request the selected rate from its virtual display. Device opt-in only. -->
+    <!-- Allow the internal recorder to use the codec full frame-rate capability,
+         request the selected rate from its virtual display, and expose the maximum-FPS
+         recording option. Device opt-in only. -->
     <bool name="config_screenRecorderHighRefreshRate">false</bool>
 
     <!-- Show a screen-recording blur control and default to suppressing expensive

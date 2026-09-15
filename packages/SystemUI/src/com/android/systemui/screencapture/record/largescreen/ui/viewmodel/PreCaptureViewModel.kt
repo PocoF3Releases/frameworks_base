@@ -382,6 +382,10 @@ constructor(
                     keepBlur =
                         toolbarViewModel.recordParametersViewModel.blurControlSupported &&
                             toolbarViewModel.recordParametersViewModel.keepBlur,
+                    maxFps =
+                        toolbarViewModel.recordParametersViewModel.maxFpsSupported &&
+                            !toolbarViewModel.recordParametersViewModel.lowQuality &&
+                            toolbarViewModel.recordParametersViewModel.maxFps,
                 )
             )
         }

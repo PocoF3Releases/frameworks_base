@@ -39,6 +39,9 @@ constructor(@Application private val context: Context, private val userTracker: 
     val blurControlSupported: Boolean
         get() = context.resources.getBoolean(R.bool.config_screenRecorderDisableBlur)
 
+    val maxFpsSupported: Boolean
+        get() = context.resources.getBoolean(R.bool.config_screenRecorderHighRefreshRate)
+
     private val audioSourceState = mutableStateOf(loadAudioSource())
     var audioSource: ScreenRecordingAudioSource
         get() = audioSourceState.value
@@ -90,6 +93,15 @@ constructor(@Application private val context: Context, private val userTracker: 
             Prefs.putInt(userContext, PREF_KEEP_BLUR, if (value) 1 else 0)
         }
 
+    private val maxFpsState =
+        mutableStateOf(Prefs.getInt(userContext, PREF_MAX_FPS, 1) == 1)
+    var maxFps: Boolean
+        get() = maxFpsState.value
+        set(value) {
+            maxFpsState.value = value
+            Prefs.putInt(userContext, PREF_MAX_FPS, if (value) 1 else 0)
+        }
+
     private fun loadAudioSource(): ScreenRecordingAudioSource {
         val useAudio = Prefs.getInt(userContext, PREF_AUDIO, 0) == 1
         if (!useAudio) return ScreenRecordingAudioSource.NONE
@@ -114,5 +126,6 @@ constructor(@Application private val context: Context, private val userTracker: 
         private const val PREF_AUDIO_SOURCE = "screenrecord_audio_source"
         private const val PREF_HEVC = "screenrecord_use_hevc"
         private const val PREF_KEEP_BLUR = "screenrecord_keep_blur"
+        private const val PREF_MAX_FPS = "screenrecord_max_fps"
     }
 }

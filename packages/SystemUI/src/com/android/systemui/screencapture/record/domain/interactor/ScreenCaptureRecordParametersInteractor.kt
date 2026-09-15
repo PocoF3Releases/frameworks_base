@@ -89,6 +89,15 @@ constructor(
         }
         get() = repository.keepBlur
 
+    val maxFpsSupported: Boolean
+        get() = repository.maxFpsSupported
+
+    var maxFps: Boolean
+        set(value) {
+            repository.maxFps = value
+        }
+        get() = repository.maxFps
+
     val canChangeAudioSource: StateFlow<Boolean> =
         serviceInteractor.status
             .map { it.canChangeAudioSource() }

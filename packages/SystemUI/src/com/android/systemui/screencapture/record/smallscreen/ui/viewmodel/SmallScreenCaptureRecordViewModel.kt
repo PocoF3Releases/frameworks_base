@@ -259,6 +259,10 @@ constructor(
         val keepBlur =
             recordDetailsParametersViewModel.blurControlSupported &&
                 recordDetailsParametersViewModel.keepBlur
+        val maxFps =
+            recordDetailsParametersViewModel.maxFpsSupported &&
+                !lowQuality &&
+                recordDetailsParametersViewModel.maxFps
         when (target) {
             is ScreenCaptureTarget.Fullscreen -> {
                 val shouldShowTaps = recordDetailsParametersViewModel.shouldShowTaps
@@ -272,6 +276,7 @@ constructor(
                         longerDuration = longerDuration,
                         hevc = hevc,
                         keepBlur = keepBlur,
+                        maxFps = maxFps,
                     )
                 )
             }
@@ -312,6 +317,7 @@ constructor(
                         longerDuration = longerDuration,
                         hevc = hevc,
                         keepBlur = keepBlur,
+                        maxFps = maxFps,
                     )
                 )
             }

@@ -52,6 +52,7 @@ constructor(private val userContextProvider: UserContextProvider) :
                         lowQuality,
                         longerDuration,
                         hevc,
+                        maxFps,
                     )
                 },
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,

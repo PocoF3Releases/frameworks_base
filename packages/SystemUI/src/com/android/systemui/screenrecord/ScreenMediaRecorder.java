@@ -109,6 +109,7 @@ public class ScreenMediaRecorder {
     private int mMaxRefreshRate;
     private String mAvcProfileLevel;
     private boolean mHighRefreshRateRecording;
+    private boolean mUseMaximumFrameRate;
 
     private boolean mLowQuality;
     private boolean mLongerDuration;
@@ -169,6 +170,9 @@ public class ScreenMediaRecorder {
     public void setHEVC(boolean hevc) {
         mHEVC = hevc;
     }
+    public void setUseMaximumFrameRate(boolean maxFps) {
+        mUseMaximumFrameRate = maxFps;
+    }
 
     private void prepare() throws IOException, RemoteException, RuntimeException {
         //Setup media projection
@@ -213,25 +217,41 @@ public class ScreenMediaRecorder {
         DisplayManager dm = mContext.getSystemService(DisplayManager.class);
         Display display = dm.getDisplay(mDisplayId);
         display.getRealMetrics(metrics);
-        int refreshRate =
-                mLowQuality ? LOW_VIDEO_FRAME_RATE : (int) display.getRefreshRate();
-        if (mMaxRefreshRate != 0 && refreshRate > mMaxRefreshRate) {
+        final boolean useMaximumFrameRate =
+                mHighRefreshRateRecording && mUseMaximumFrameRate && !mLowQuality;
+
+        int refreshRate;
+        if (mLowQuality) {
+            refreshRate = LOW_VIDEO_FRAME_RATE;
+        } else if (useMaximumFrameRate) {
+            // Maximum-FPS mode follows the refresh rate of the active physical display mode.
+            refreshRate = Math.max(1, Math.round(display.getMode().getRefreshRate()));
+        } else {
+            // Preserve the original recorder behavior for normal and non-opted recordings.
+            refreshRate = (int) display.getRefreshRate();
+        }
+
+        if (!useMaximumFrameRate && mMaxRefreshRate != 0 && refreshRate > mMaxRefreshRate) {
             refreshRate = mMaxRefreshRate;
         }
         VideoParameters videoParameters = getSupportedSize(metrics.widthPixels,
                 metrics.heightPixels, refreshRate);
         if (!mHEVC) {
             mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            mMediaRecorder.setVideoEncodingProfileLevel(
-                    MediaCodecInfo.CodecProfileLevel.AVCProfileMain,
-                    mLowQuality ? MediaCodecInfo.CodecProfileLevel.AVCLevel32
-                    : getAvcProfileLevelCodeByName(mAvcProfileLevel));
+            if (!useMaximumFrameRate) {
+                mMediaRecorder.setVideoEncodingProfileLevel(
+                        MediaCodecInfo.CodecProfileLevel.AVCProfileMain,
+                        mLowQuality ? MediaCodecInfo.CodecProfileLevel.AVCLevel32
+                        : getAvcProfileLevelCodeByName(mAvcProfileLevel));
+            }
         } else {
             mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.HEVC);
-            mMediaRecorder.setVideoEncodingProfileLevel(
-                    MediaCodecInfo.CodecProfileLevel.HEVCProfileMain,
-                    mLowQuality ? MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel31
-                    : MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel41);
+            if (!useMaximumFrameRate) {
+                mMediaRecorder.setVideoEncodingProfileLevel(
+                        MediaCodecInfo.CodecProfileLevel.HEVCProfileMain,
+                        mLowQuality ? MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel31
+                        : MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel41);
+            }
         }
         mMediaRecorder.setVideoSize(videoParameters.mWidth, videoParameters.mHeight);
         mMediaRecorder.setVideoFrameRate(videoParameters.mRefreshRate);
