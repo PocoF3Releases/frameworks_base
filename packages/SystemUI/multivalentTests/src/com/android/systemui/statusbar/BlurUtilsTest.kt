@@ -127,9 +127,49 @@ class BlurUtilsTest : SysuiTestCase() {
         verify(transaction).setEarlyWakeupEnd(ArgumentMatchers.any())
     }
 
+    @Test
+    fun testPersistentWakeup_canEndAfterBlurDisabledAndViewDetached() {
+        `when`(transaction.setEarlyWakeupStart(ArgumentMatchers.any())).thenReturn(transaction)
+        `when`(transaction.setEarlyWakeupEnd(ArgumentMatchers.any())).thenReturn(transaction)
+        blurUtils.setPersistentEarlyWakeup(true, mock(ViewRootImpl::class.java))
+        blurUtils.blursEnabled = false
+        blurUtils.setPersistentEarlyWakeup(false, null)
+        verify(transaction).setEarlyWakeupEnd(ArgumentMatchers.any())
+    }
+
+    @Test
+    fun testPreparedBlurCancelledBeforeApply_endsWakeup() {
+        `when`(transaction.setEarlyWakeupStart(ArgumentMatchers.any())).thenReturn(transaction)
+        val surfaceControl = mock(SurfaceControl::class.java)
+        val viewRootImpl = mock(ViewRootImpl::class.java)
+        `when`(viewRootImpl.surfaceControl).thenReturn(surfaceControl)
+        `when`(surfaceControl.isValid).thenReturn(true)
+        blurUtils.prepareBlur(10)
+        blurUtils.applyBlur(viewRootImpl, 0, false)
+        verify(syncRTTransactionApplier).scheduleApply(captor.capture())
+        SyncRtSurfaceTransactionApplier.applyParams(transaction, captor.value, FloatArray(0))
+        verify(transaction).setEarlyWakeupEnd(ArgumentMatchers.any())
+    }
+
+    @Test
+    fun testPreparedBlurCancelledAfterSupportDisabled_endsWakeup() {
+        `when`(transaction.setEarlyWakeupStart(ArgumentMatchers.any())).thenReturn(transaction)
+        val surfaceControl = mock(SurfaceControl::class.java)
+        val viewRootImpl = mock(ViewRootImpl::class.java)
+        `when`(viewRootImpl.surfaceControl).thenReturn(surfaceControl)
+        `when`(surfaceControl.isValid).thenReturn(true)
+        blurUtils.prepareBlur(10)
+        blurUtils.blursEnabled = false
+        blurUtils.applyBlur(viewRootImpl, 0, false)
+        verify(syncRTTransactionApplier).scheduleApply(captor.capture())
+        SyncRtSurfaceTransactionApplier.applyParams(transaction, captor.value, FloatArray(0))
+        verify(transaction).setEarlyWakeupEnd(ArgumentMatchers.any())
+    }
+
     inner class TestableBlurUtils :
         BlurUtils(resources, blurConfig, crossWindowBlurListeners, dumpManager) {
         var blursEnabled = true
+        override fun createTransaction(): SurfaceControl.Transaction = transaction
         override val transactionApplier: SyncRtSurfaceTransactionApplier
             get() = syncRTTransactionApplier
 

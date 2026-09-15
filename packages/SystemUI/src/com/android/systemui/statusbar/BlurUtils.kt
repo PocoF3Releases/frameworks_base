@@ -160,15 +160,12 @@ constructor(
                     earlyWakeupStartNextFrame(builder, APPLY_BLUR_TRACE_NAME)
                 }
             }
-            if (
-                earlyWakeupEnabled &&
-                    lastAppliedBlur != 0 &&
-                    radius == 0 &&
-                    !persistentEarlyWakeupRequired
-            ) {
-                earlyWakeupEndNextFrame(builder, APPLY_BLUR_TRACE_NAME)
-            }
             lastAppliedBlur = radius
+        }
+        // A prepared request can be cancelled before any non-zero blur is applied,
+        // including when blur support changes between preparation and this frame.
+        if (earlyWakeupEnabled && radius == 0 && !persistentEarlyWakeupRequired) {
+            earlyWakeupEndNextFrame(builder, APPLY_BLUR_TRACE_NAME)
         }
         builder.withOpaque(opaque)
         transactionApplier.scheduleApply(builder.build())
@@ -275,7 +272,9 @@ constructor(
      */
     fun setPersistentEarlyWakeup(persistentWakeup: Boolean, viewRootImpl: ViewRootImpl?) {
         persistentEarlyWakeupRequired = persistentWakeup
-        if (viewRootImpl == null || !supportsBlursOnWindows()) return
+        // Releasing an existing wakeup request must also work after blur is disabled
+        // or the view is detached. Only acquiring a new request needs a valid target.
+        if (persistentWakeup && (viewRootImpl == null || !supportsBlursOnWindows())) return
 
         if (persistentEarlyWakeupRequired) {
             if (earlyWakeupEnabled) return
