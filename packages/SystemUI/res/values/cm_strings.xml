@@ -121,6 +121,11 @@
     <string name="screenshot_delete_description">Delete screenshot</string>
 
     <!-- Screen record -->
+    <!-- Screen recording option to keep SystemUI background blur enabled. [CHAR LIMIT=50] -->
+    <string name="screenrecord_keep_blur_label">Keep blur effects</string>
+    <!-- Summary for the screen recording blur option. [CHAR LIMIT=NONE] -->
+    <string name="screenrecord_keep_blur_summary">Preserve System UI background blur while recording. This may reduce smoothness.</string>
+
     <string name="screenrecord_lowquality_label">Lower quality</string>
     <string name="screenrecord_lowquality_summary">For smaller file size</string>
     <string name="screenrecord_longer_timeout_switch_label">Larger file size limit</string>

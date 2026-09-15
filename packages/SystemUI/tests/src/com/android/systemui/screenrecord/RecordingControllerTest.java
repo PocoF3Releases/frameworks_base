@@ -122,6 +122,7 @@ public class RecordingControllerTest extends SysuiTestCase {
         when(mScreenRecordPermissionDialogDelegate.createDialog())
                 .thenReturn(mScreenRecordSystemUIDialog);
         ScreenRecordLegacyUxControllerImpl uxController = new ScreenRecordLegacyUxControllerImpl(
+                true,
                 mMainExecutor,
                 mBroadcastDispatcher,
                 () -> mDevicePolicyResolver,
@@ -140,6 +141,8 @@ public class RecordingControllerTest extends SysuiTestCase {
         );
         mController = uxController.getRecordingController();
         mController.addCallback(mCallback);
+        ScreenRecordingBlurState.clearPendingBlurPreference();
+        ScreenRecordingBlurState.setRecordingActive(false, true);
     }
 
     // Test that when a countdown in progress is cancelled, the controller goes from starting to not
@@ -156,6 +159,32 @@ public class RecordingControllerTest extends SysuiTestCase {
         assertFalse(mController.isStarting());
         assertFalse(mController.isRecording());
 
+        verify(mCallback).onCountdownEnd();
+    }
+
+
+    @Test
+    public void testSuccessfulStartEnablesBlurSuppression() {
+        mController.startCountdown(0, 0, start(), stop());
+
+        assertTrue(mController.isRecording());
+        assertTrue(ScreenRecordingBlurState.isRecordingActive());
+
+        mController.stopRecording(StopReason.STOP_UNKNOWN);
+        assertFalse(ScreenRecordingBlurState.isRecordingActive());
+    }
+
+    @Test
+    public void testFailedStartDoesNotEnableRecordingOrBlurSuppression() {
+        Runnable failingStart = () -> {
+            throw new RuntimeException("screen recording start failed");
+        };
+
+        mController.startCountdown(0, 0, failingStart, stop());
+
+        assertFalse(mController.isStarting());
+        assertFalse(mController.isRecording());
+        assertFalse(ScreenRecordingBlurState.isRecordingActive());
         verify(mCallback).onCountdownEnd();
     }
 

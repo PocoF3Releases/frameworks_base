@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.android.systemui.Prefs
+import com.android.systemui.res.R
 import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.screencapture.common.ScreenCaptureScope
 import com.android.systemui.screenrecord.ScreenRecordingAudioSource
@@ -34,6 +35,9 @@ constructor(@Application private val context: Context, private val userTracker: 
 
     private val userContext: Context
         get() = context.createContextAsUser(userTracker.userHandle, 0)
+
+    val blurControlSupported: Boolean
+        get() = context.resources.getBoolean(R.bool.config_screenRecorderDisableBlur)
 
     private val audioSourceState = mutableStateOf(loadAudioSource())
     var audioSource: ScreenRecordingAudioSource
@@ -77,6 +81,15 @@ constructor(@Application private val context: Context, private val userTracker: 
             Prefs.putInt(userContext, PREF_HEVC, if (value) 1 else 0)
         }
 
+    private val keepBlurState =
+        mutableStateOf(Prefs.getInt(userContext, PREF_KEEP_BLUR, 0) == 1)
+    var keepBlur: Boolean
+        get() = keepBlurState.value
+        set(value) {
+            keepBlurState.value = value
+            Prefs.putInt(userContext, PREF_KEEP_BLUR, if (value) 1 else 0)
+        }
+
     private fun loadAudioSource(): ScreenRecordingAudioSource {
         val useAudio = Prefs.getInt(userContext, PREF_AUDIO, 0) == 1
         if (!useAudio) return ScreenRecordingAudioSource.NONE
@@ -100,5 +113,6 @@ constructor(@Application private val context: Context, private val userTracker: 
         private const val PREF_AUDIO = "screenrecord_use_audio"
         private const val PREF_AUDIO_SOURCE = "screenrecord_audio_source"
         private const val PREF_HEVC = "screenrecord_use_hevc"
+        private const val PREF_KEEP_BLUR = "screenrecord_keep_blur"
     }
 }

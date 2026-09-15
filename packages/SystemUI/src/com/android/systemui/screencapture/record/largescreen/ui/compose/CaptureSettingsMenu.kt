@@ -181,6 +181,21 @@ fun CaptureSettingsMenu(viewModel: PreCaptureToolbarViewModel, screenRecordingSe
                 enabled = screenRecordingSelected,
             )
 
+            if (recordParameters.blurControlSupported) {
+                val blurIcon by
+                    loadIcon(
+                        viewModel = viewModel,
+                        resId = R.drawable.ic_screenrecord_blur,
+                        contentDescription = null,
+                    )
+                SettingsMenuItem(
+                    text = stringResource(R.string.screenrecord_keep_blur_label),
+                    leadingIcon = blurIcon,
+                    checked = recordParameters.keepBlur,
+                    onCheckedChange = { recordParameters.setKeepBlur(it) },
+                    enabled = screenRecordingSelected,
+                )
+            }
             if (hasHevcHwEncoder()) {
                 val hevcIcon by
                     loadIcon(

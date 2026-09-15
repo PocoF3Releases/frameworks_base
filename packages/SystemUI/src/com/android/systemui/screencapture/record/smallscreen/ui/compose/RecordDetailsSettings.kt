@@ -196,6 +196,19 @@ fun RecordDetailsSettings(
                 modifier = Modifier,
             )
             RichSwitch(
+                visible = parametersViewModel.blurControlSupported,
+                icon =
+                    loadIcon(
+                        viewModel = drawableLoaderViewModel,
+                        resId = R.drawable.ic_screenrecord_blur,
+                        contentDescription = null,
+                    ),
+                label = stringResource(R.string.screenrecord_keep_blur_label),
+                checked = parametersViewModel.keepBlur,
+                onCheckedChange = { parametersViewModel.setKeepBlur(it) },
+                modifier = Modifier,
+            )
+            RichSwitch(
                 visible = hasHevcHwEncoder(),
                 icon =
                     loadIcon(

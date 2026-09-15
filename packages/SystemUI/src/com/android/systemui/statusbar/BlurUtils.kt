@@ -41,6 +41,7 @@ import com.android.systemui.dagger.qualifiers.Main
 import com.android.systemui.dump.DumpManager
 import com.android.systemui.keyguard.ui.transitions.BlurConfig
 import com.android.systemui.res.R
+import com.android.systemui.screenrecord.ScreenRecordingBlurState
 import java.io.PrintWriter
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -246,10 +247,10 @@ constructor(
      */
     open fun supportsBlursOnWindows(): Boolean {
         return supportsBlursOnWindowsBase() &&
+            !ScreenRecordingBlurState.isRecordingActive() &&
             crossWindowBlurListeners != null &&
             crossWindowBlurListeners.isCrossWindowBlurEnabled
     }
-
     private fun supportsBlursOnWindowsBase(): Boolean {
         return CROSS_WINDOW_BLUR_SUPPORTED &&
             ActivityManager.isHighEndGfx() &&
