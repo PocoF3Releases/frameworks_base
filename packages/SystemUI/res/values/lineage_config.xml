@@ -75,8 +75,12 @@
     <!-- If not zero, limits the internal screen recorder's framerate to the set value. -->
     <integer name="config_screenRecorderMaxFramerate">0</integer>
 
+    <!-- Allow the internal recorder to use the codec full frame-rate capability and
+         request the selected rate from its virtual display. Device opt-in only. -->
+    <bool name="config_screenRecorderHighRefreshRate">false</bool>
+
     <!-- If not empty, sets the AVC codec profile level used for the internal screen recorder.
-         Possible values: 3, 3.1, 3.2, 4, 4.1, 4.2
+         Possible values: 3, 3.1, 3.2, 4, 4.1, 4.2, 5, 5.1, 5.2
     -->
     <string name="config_screenRecorderAVCProfileLevel" translatable="false">4.2</string>
 
