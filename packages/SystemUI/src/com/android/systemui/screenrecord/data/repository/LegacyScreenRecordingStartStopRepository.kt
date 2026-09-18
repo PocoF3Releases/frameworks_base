@@ -22,6 +22,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.os.Bundle
 import com.android.systemui.screenrecord.RecordingService
+import com.android.systemui.screenrecord.ScreenRecordingBlurState
 import com.android.systemui.screenrecord.shared.model.ScreenRecordingParameters
 import com.android.systemui.settings.UserContextProvider
 import javax.inject.Inject
@@ -36,6 +37,7 @@ constructor(private val userContextProvider: UserContextProvider) :
         get() = userContextProvider.userContext
 
     override fun startRecording(parameters: ScreenRecordingParameters) {
+        ScreenRecordingBlurState.setKeepBlurForNextRecording(parameters.keepBlur)
         PendingIntent.getForegroundService(
                 userContext,
                 RecordingService.REQUEST_CODE,
@@ -50,6 +52,7 @@ constructor(private val userContextProvider: UserContextProvider) :
                         lowQuality,
                         longerDuration,
                         hevc,
+                        maxFps,
                     )
                 },
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,

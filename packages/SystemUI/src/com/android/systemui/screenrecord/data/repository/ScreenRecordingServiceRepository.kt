@@ -34,6 +34,7 @@ import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.dagger.qualifiers.Background
 import com.android.systemui.screencapture.record.shared.ScreenRecordingLogger
 import com.android.systemui.screenrecord.ScreenRecordUxController
+import com.android.systemui.screenrecord.ScreenRecordingBlurState
 import com.android.systemui.screenrecord.data.model.ScreenRecordModel
 import com.android.systemui.screenrecord.service.IScreenRecordingService
 import com.android.systemui.screenrecord.service.IScreenRecordingServiceCallback
@@ -197,6 +198,9 @@ constructor(
                                 if (service.isRecording) {
                                     service.updateParameters(parameters)
                                 } else {
+                                    ScreenRecordingBlurState.setKeepBlurForNextRecording(
+                                        parameters.keepBlur
+                                    )
                                     service.startRecording(parameters)
                                     screenRecordUxController.updateState(true)
                                     logger.startScreenRecording(parameters)
