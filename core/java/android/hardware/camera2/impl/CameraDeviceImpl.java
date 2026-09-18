@@ -2068,6 +2068,9 @@ public class CameraDeviceImpl extends CameraDevice
                 checkInputConfigurationWithStreamConfigurationsAs(inputConfig, configMap)) {
             return true;
         }
+        if (!maxResolution && XiaomiInputConfiguration.isSupported(mCharacteristics, inputConfig)) {
+            return true;
+        }
 
         for (Map.Entry<String, CameraCharacteristics> entry : getPhysicalIdToChars().entrySet()) {
             configMap = entry.getValue().get(ck);
@@ -2075,6 +2078,10 @@ public class CameraDeviceImpl extends CameraDevice
             if (configMap != null &&
                     checkInputConfigurationWithStreamConfigurationsAs(inputConfig, configMap)) {
                 // Input config supported.
+                return true;
+            }
+            if (!maxResolution && XiaomiInputConfiguration.isSupported(
+                    entry.getValue(), inputConfig)) {
                 return true;
             }
         }
