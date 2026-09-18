@@ -379,6 +379,13 @@ constructor(
                     lowQuality = toolbarViewModel.recordParametersViewModel.lowQuality,
                     longerDuration = toolbarViewModel.recordParametersViewModel.longerDuration,
                     hevc = toolbarViewModel.recordParametersViewModel.hevc,
+                    keepBlur =
+                        toolbarViewModel.recordParametersViewModel.blurControlSupported &&
+                            toolbarViewModel.recordParametersViewModel.keepBlur,
+                    maxFps =
+                        toolbarViewModel.recordParametersViewModel.maxFpsSupported &&
+                            !toolbarViewModel.recordParametersViewModel.lowQuality &&
+                            toolbarViewModel.recordParametersViewModel.maxFps,
                 )
             )
         }

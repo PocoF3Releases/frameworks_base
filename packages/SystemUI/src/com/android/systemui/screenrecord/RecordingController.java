@@ -57,6 +57,7 @@ public class RecordingController
     private final ScreenRecordUxController mScreenRecordUxController;
     private boolean mIsStarting;
     private boolean mIsRecording;
+    private final boolean mDisableBlurWhileRecording;
     private Runnable mStop;
     private @StopReason int mStopReason = StopReason.STOP_UNKNOWN;
     private CountDownTimer mCountDownTimer = null;
@@ -106,6 +107,7 @@ public class RecordingController
      */
     public RecordingController(
             ScreenRecordUxController screenRecordUxController,
+            boolean disableBlurWhileRecording,
             @Main Executor mainExecutor,
             BroadcastDispatcher broadcastDispatcher,
             Lazy<ScreenCaptureDevicePolicyResolver> devicePolicyResolver,
@@ -118,6 +120,7 @@ public class RecordingController
             ScreenRecordPermissionContentManager.Factory
                     screenRecordPermissionContentManagerFactory) {
         mScreenRecordUxController = screenRecordUxController;
+        mDisableBlurWhileRecording = disableBlurWhileRecording;
         mMainExecutor = mainExecutor;
         mDevicePolicyResolver = devicePolicyResolver;
         mBroadcastDispatcher = broadcastDispatcher;
@@ -207,19 +210,28 @@ public class RecordingController
             @Override
             public void onFinish() {
                 mIsStarting = false;
-                mIsRecording = true;
                 for (ScreenRecordUxController.StateChangeCallback cb : mListeners) {
                     cb.onCountdownEnd();
                 }
                 try {
                     start.run();
-                    mUserTracker.addCallback(mUserChangedCallback, mMainExecutor);
 
+                    // Only expose recording and blur state after the start request succeeds.
+                    mIsRecording = true;
+                    ScreenRecordingBlurState.setRecordingActive(
+                            true, mDisableBlurWhileRecording);
+
+                    mUserTracker.addCallback(mUserChangedCallback, mMainExecutor);
                     IntentFilter stateFilter = new IntentFilter(INTENT_UPDATE_STATE);
                     mBroadcastDispatcher.registerReceiver(mStateChangeReceiver, stateFilter, null,
                             UserHandle.ALL);
                     mRecordingControllerLogger.logSentStartIntent();
                 } catch (Throwable e) {
+                    if (!mIsRecording) {
+                        // No recording session was started; discard any pending per-recording
+                        // blur preference so it cannot leak into a later attempt.
+                        ScreenRecordingBlurState.clearPendingBlurPreference();
+                    }
                     if (e instanceof PendingIntent.CanceledException) {
                         mRecordingControllerLogger.logPendingIntentCancelled(
                                 (PendingIntent.CanceledException) e);
@@ -242,6 +254,7 @@ public class RecordingController
             mRecordingControllerLogger.logCountdownCancelErrorNoTimer();
         }
         mIsStarting = false;
+        ScreenRecordingBlurState.clearPendingBlurPreference();
 
         for (ScreenRecordUxController.StateChangeCallback cb : mListeners) {
             cb.onCountdownEnd();
@@ -296,6 +309,8 @@ public class RecordingController
             mBroadcastDispatcher.unregisterReceiver(mStateChangeReceiver);
         }
         mIsRecording = isRecording;
+        ScreenRecordingBlurState.setRecordingActive(
+                isRecording, mDisableBlurWhileRecording);
         for (ScreenRecordUxController.StateChangeCallback cb : mListeners) {
             if (isRecording) {
                 cb.onRecordingStart();
