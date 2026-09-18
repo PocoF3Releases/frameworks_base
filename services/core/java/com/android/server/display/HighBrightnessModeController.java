@@ -253,6 +253,14 @@ class HighBrightnessModeController {
             return;
         }
 
+        // A zero timing window means this display has no HBM time quota.
+        // Avoid creating timing sessions/events which cannot consume a
+        // meaningful budget.
+        if (mHbmData.timeWindowMillis == 0) {
+            recalculateTimeAllowance();
+            return;
+        }
+
         // If we are starting or ending a high brightness mode session, store the current
         // session in mRunningStartTimeMillis, or the old one in mEvents.
         final long runningStartTime = mHighBrightnessModeMetadata.getRunningStartTimeMillis();
@@ -487,6 +495,17 @@ class HighBrightnessModeController {
      * Recalculates the allowable HBM time.
      */
     private void recalculateTimeAllowance() {
+        // Vendor display configs may use 0/0/0 timing to represent
+        // unrestricted HBM. Without this special case, remainingTime is zero
+        // and brightness above the transition point causes a recalculation to
+        // be posted roughly every 1 ms.
+        if (hbmControllerEnabled() && mHbmData.timeWindowMillis == 0) {
+            mIsTimeAvailable = true;
+            mHandler.removeCallbacks(mRecalcRunnable);
+            updateHbmMode();
+            return;
+        }
+
         final long currentTime = mClock.uptimeMillis();
         final long remainingTime = calculateRemainingTime(currentTime);
 
