@@ -33,6 +33,7 @@ import java.util.concurrent.Executor
  * This class forwards all calls to the underlying [RecordingController] instance.
  */
 class ScreenRecordLegacyUxControllerImpl(
+    private val disableBlurWhileRecording: Boolean,
     @Main private val mainExecutor: Executor,
     broadcastDispatcher: BroadcastDispatcher,
     devicePolicyResolver: Lazy<ScreenCaptureDevicePolicyResolver>,
@@ -48,6 +49,7 @@ class ScreenRecordLegacyUxControllerImpl(
     val recordingController: RecordingController =
         RecordingController(
             this,
+            disableBlurWhileRecording,
             mainExecutor,
             broadcastDispatcher,
             devicePolicyResolver,

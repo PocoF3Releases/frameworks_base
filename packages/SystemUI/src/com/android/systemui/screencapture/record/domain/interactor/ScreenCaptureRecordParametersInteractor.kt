@@ -80,6 +80,24 @@ constructor(
         }
         get() = repository.hevc
 
+    val blurControlSupported: Boolean
+        get() = repository.blurControlSupported
+
+    var keepBlur: Boolean
+        set(value) {
+            repository.keepBlur = value
+        }
+        get() = repository.keepBlur
+
+    val maxFpsSupported: Boolean
+        get() = repository.maxFpsSupported
+
+    var maxFps: Boolean
+        set(value) {
+            repository.maxFps = value
+        }
+        get() = repository.maxFps
+
     val canChangeAudioSource: StateFlow<Boolean> =
         serviceInteractor.status
             .map { it.canChangeAudioSource() }

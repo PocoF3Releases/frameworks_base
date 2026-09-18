@@ -78,6 +78,10 @@ constructor(
     val longerDuration: Boolean by interactor::longerDuration
 
     val hevc: Boolean by interactor::hevc
+    val blurControlSupported: Boolean by interactor::blurControlSupported
+    val keepBlur: Boolean by interactor::keepBlur
+    val maxFpsSupported: Boolean by interactor::maxFpsSupported
+    val maxFps: Boolean by interactor::maxFps
 
     var shouldRecordDevice: Boolean
         get() =
@@ -160,6 +164,14 @@ constructor(
 
     fun setHevc(hevc: Boolean) {
         interactor.hevc = hevc
+    }
+
+    fun setKeepBlur(keepBlur: Boolean) {
+        interactor.keepBlur = keepBlur
+    }
+
+    fun setMaxFps(maxFps: Boolean) {
+        interactor.maxFps = maxFps
     }
 
     @AssistedFactory
