@@ -61,6 +61,11 @@ public class PackageBackwardCompatibility extends PackageSharedLibraryUpdater {
 
         packageUpdaters.add(new AndroidHidlUpdater());
 
+        // Optional device-installed Java clients for the preinstalled MIUI camera.
+        packageUpdaters.add(new XiaomiCameraSharedLibraryUpdater(
+                SystemConfig.getInstance().getSharedLibraries().containsKey(
+                        XiaomiCameraSharedLibraryUpdater.LIBRARY_NAME)));
+
         // Add this before adding AndroidTestBaseUpdater so that android.test.base comes before
         // android.test.mock.
         packageUpdaters.add(new AndroidTestRunnerSplitUpdater());

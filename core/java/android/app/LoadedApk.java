@@ -935,6 +935,9 @@ public final class LoadedApk {
         Resources systemR = Resources.getSystem();
         Collections.addAll(libsToLoadAfter, systemR.getStringArray(
                 R.array.config_sharedLibrariesLoadedAfterApp));
+        // This compatibility jar fills missing MIUI classes. Do not shadow a
+        // camera APK that already carries its own version of the same bindings.
+        libsToLoadAfter.add("xiaomi-misys");
 
         List<ClassLoader> loaders = new ArrayList<>();
         List<ClassLoader> after = new ArrayList<>();
