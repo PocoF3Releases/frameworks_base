@@ -23,6 +23,7 @@ import com.android.systemui.common.coroutine.ChannelExt.trySendWithFailureLoggin
 import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.dagger.qualifiers.Main
+import com.android.systemui.screenrecord.ScreenRecordingBlurState
 import com.android.systemui.utils.coroutines.flow.conflatedCallbackFlow
 import com.android.systemui.window.data.repository.WindowRootViewBlurRepository.Companion.isDisableBlurSysPropSet
 import java.util.concurrent.Executor
@@ -31,6 +32,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -79,20 +81,24 @@ constructor(
     override val scaleRequestedByShade = MutableStateFlow(1.0f)
 
     override val isBlurSupported: StateFlow<Boolean> =
-        conflatedCallbackFlow {
-                val sendUpdate =
-                    Consumer<Boolean> { value: Boolean ->
-                        trySendWithFailureLogging(
-                            isBlurAllowed() && value,
-                            TAG,
-                            "unable to send blur enabled/disable state change",
-                        )
-                    }
-                crossWindowBlurListeners.addListener(executor, sendUpdate)
-                sendUpdate.accept(crossWindowBlurListeners.isCrossWindowBlurEnabled)
-
-                awaitClose { crossWindowBlurListeners.removeListener(sendUpdate) }
-            } // stateIn because this is backed by a binder call.
+        combine(
+                conflatedCallbackFlow {
+                    val sendUpdate =
+                        Consumer<Boolean> { value: Boolean ->
+                            trySendWithFailureLogging(
+                                value,
+                                TAG,
+                                "unable to send blur enabled/disable state change",
+                            )
+                        }
+                    crossWindowBlurListeners.addListener(executor, sendUpdate)
+                    sendUpdate.accept(crossWindowBlurListeners.isCrossWindowBlurEnabled)
+                    awaitClose { crossWindowBlurListeners.removeListener(sendUpdate) }
+                },
+                ScreenRecordingBlurState.recordingActive,
+            ) { crossWindowBlurEnabled, recordingActive ->
+                isBlurAllowed() && crossWindowBlurEnabled && !recordingActive
+            }
             .stateIn(scope, SharingStarted.Eagerly, false)
 
     override var blurAppliedListener: BlurAppliedListener? = null

@@ -122,12 +122,12 @@ open class ScreenRecordingService : ComponentService() {
         return super.onUnbind(intent)
     }
 
-    private fun RecordingContext.startRecording() {
+    private fun RecordingContext.startRecording(): Boolean {
         screenRecordingPreferenceRepository.setShouldShowTaps(shouldShowTaps)
         if (shouldShowSeconds) {
             screenRecordingPreferenceRepository.setShouldShowSeconds(shouldShowSeconds)
         }
-        try {
+        return try {
             Log.d(tag, "Starting screen recording user=$userId $this")
             val notification = notificationInteractor.createRecordingNotification(audioSource)
             if (Flags.screenRecordingServiceFix()) {
@@ -138,15 +138,23 @@ open class ScreenRecordingService : ComponentService() {
                 val notificationManager = getSystemService(NotificationManager::class.java)
                 notificationManager?.notify(null, notificationId, notification)
             }
+            true
         } catch (e: Exception) {
             screenRecordingPreferenceRepository.maybeRestoreSetting()
             Log.e(tag, "Error starting screen recording", e)
             notificationInteractor.notifyErrorStarting(notificationId)
             showToast(R.string.screenrecord_start_error)
+
+            // The repository optimistically transitions to Started before making this Binder call.
+            // Report the failure so it rolls the controller/UI (including recording blur state)
+            // back to Stopped instead of leaving a phantom recording active.
+            launchCallbackAction { onRecordingInterrupted(userId, StopReason.STOP_ERROR) }
+
             if (Flags.screenRecordingServiceFix()) {
                 stopForeground(STOP_FOREGROUND_DETACH)
             }
             stopSelf()
+            false
         }
     }
 
@@ -249,10 +257,13 @@ open class ScreenRecordingService : ComponentService() {
                             parameters.lowQuality,
                             parameters.longerDuration,
                             parameters.hevc,
-                        ),
+                        ).apply {
+                            setUseMaximumFrameRate(parameters.maxFps)
+                        },
                 )
-            context.startRecording()
-            recordingContext = context
+            if (context.startRecording()) {
+                recordingContext = context
+            }
         }
     }
 

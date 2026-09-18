@@ -16,10 +16,13 @@
 
 package com.android.systemui.screenrecord
 
+import android.content.Context
+
 import com.android.systemui.CoreStartable
 import com.android.systemui.Flags
 import com.android.systemui.broadcast.BroadcastDispatcher
 import com.android.systemui.dagger.SysUISingleton
+import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.dagger.qualifiers.Main
 import com.android.systemui.log.LogBuffer
 import com.android.systemui.log.LogBufferFactory
@@ -92,6 +95,7 @@ interface ScreenRecordModule {
         @Provides
         @SysUISingleton
         fun provideScreenRecordUxController(
+            @Application context: Context,
             @Main mainExecutor: Executor,
             broadcastDispatcher: BroadcastDispatcher,
             devicePolicyResolver: Lazy<ScreenCaptureDevicePolicyResolver>,
@@ -108,6 +112,7 @@ interface ScreenRecordModule {
                 ScreenRecordUxControllerImpl()
             } else {
                 ScreenRecordLegacyUxControllerImpl(
+                    context.resources.getBoolean(R.bool.config_screenRecorderDisableBlur),
                     mainExecutor,
                     broadcastDispatcher,
                     devicePolicyResolver,

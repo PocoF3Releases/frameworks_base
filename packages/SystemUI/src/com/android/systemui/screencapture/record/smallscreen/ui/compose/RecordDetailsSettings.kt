@@ -170,6 +170,21 @@ fun RecordDetailsSettings(
                 modifier = Modifier,
             )
             RichSwitch(
+                visible = parametersViewModel.maxFpsSupported,
+                icon =
+                    loadIcon(
+                        viewModel = drawableLoaderViewModel,
+                        resId = R.drawable.ic_screenrecord_max_fps,
+                        contentDescription = null,
+                    ),
+                label = stringResource(R.string.screenrecord_max_fps_label),
+                checked = parametersViewModel.maxFps,
+                enabled = !parametersViewModel.lowQuality,
+                disabledMessageRes = R.string.screenrecord_max_fps_low_quality_disabled,
+                onCheckedChange = { parametersViewModel.setMaxFps(it) },
+                modifier = Modifier,
+            )
+            RichSwitch(
                 visible = true,
                 icon =
                     loadIcon(
@@ -193,6 +208,19 @@ fun RecordDetailsSettings(
                 label = stringResource(R.string.screenrecord_longer_timeout_switch_label),
                 checked = parametersViewModel.longerDuration,
                 onCheckedChange = { parametersViewModel.setLongerDuration(it) },
+                modifier = Modifier,
+            )
+            RichSwitch(
+                visible = parametersViewModel.blurControlSupported,
+                icon =
+                    loadIcon(
+                        viewModel = drawableLoaderViewModel,
+                        resId = R.drawable.ic_screenrecord_blur,
+                        contentDescription = null,
+                    ),
+                label = stringResource(R.string.screenrecord_keep_blur_label),
+                checked = parametersViewModel.keepBlur,
+                onCheckedChange = { parametersViewModel.setKeepBlur(it) },
                 modifier = Modifier,
             )
             RichSwitch(
