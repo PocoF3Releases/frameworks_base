@@ -60,6 +60,15 @@ public class TrickyStoreService {
         new java.io.File("/data/system/trickystore/revocation_cache.json");
     private volatile CustomPatchLevel mCustomPatchLevel = null;
     private final Map<String, CustomPatchLevel> mPerPackagePatchLevels = new ConcurrentHashMap<>();
+    // Attesting through a hooked process breaks STRONG — always skipped
+    // regardless of what mode the target list has for them.
+    private static final java.util.Set<String> XPOSED_PACKAGES = java.util.Set.of(
+            "org.lsposed.manager",
+            "io.github.lsposed.manager",
+            "de.robv.android.xposed.installer",
+            "com.solohsu.android.edxp.manager",
+            "me.weishu.exposed"
+    );
     private volatile String mLastKeyboxFingerprint = null;
 
     private final KeyBoxManager mKeyBoxManager;
@@ -576,6 +585,7 @@ public class TrickyStoreService {
         maybeRefreshTargets();
         ensureTeeStatus();
         for (String pkg : packages) {
+            if (XPOSED_PACKAGES.contains(pkg)) continue;
             Mode mode = mPackageModes.get(pkg);
             if (mode == Mode.SKIP) continue;
             if (mode == Mode.LEAF_HACK) return true;
