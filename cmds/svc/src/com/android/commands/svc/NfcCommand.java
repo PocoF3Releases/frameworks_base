@@ -16,11 +16,7 @@
 
 package com.android.commands.svc;
 
-import android.app.ActivityThread;
-import android.content.Context;
-import android.nfc.NfcAdapter;
-import android.nfc.NfcManager;
-import android.os.Looper;
+import java.io.IOException;
 
 public class NfcCommand extends Svc.Command {
 
@@ -43,27 +39,28 @@ public class NfcCommand extends Svc.Command {
 
     @Override
     public void run(String[] args) {
-        Looper.prepareMainLooper();
-        ActivityThread.initializeMainlineModules();
-        Context context = ActivityThread.systemMain().getSystemContext();
-        NfcManager nfcManager = context.getSystemService(NfcManager.class);
-        if (nfcManager == null) {
-            System.err.println("Got a null NfcManager, is the system running?");
+        if (args.length != 2 ||
+                !("enable".equals(args[1]) || "disable".equals(args[1]))) {
+            System.err.println(longHelp());
             return;
         }
-        NfcAdapter adapter = nfcManager.getDefaultAdapter();
-        if (adapter == null) {
-            System.err.println("Got a null NfcAdapter, is the system running?");
-            return;
+
+        // The NFC shell interface supplies the correct caller attribution and avoids
+        // depending on hidden APIs in the modular NFC framework.
+        ProcessBuilder command = "enable".equals(args[1])
+                ? new ProcessBuilder("/system/bin/cmd", "nfc", "enable-nfc")
+                : new ProcessBuilder("/system/bin/cmd", "nfc", "disable-nfc", "[persist]");
+        try {
+            int result = command.inheritIO().start().waitFor();
+            if (result != 0) {
+                System.err.println("NFC command failed with exit code " + result);
+            }
+        } catch (IOException e) {
+            System.err.println("Unable to execute NFC command: " + e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Interrupted while waiting for NFC command");
         }
-        if (args.length == 2 && "enable".equals(args[1])) {
-            adapter.enable();
-            return;
-        } else if (args.length == 2 && "disable".equals(args[1])) {
-            adapter.disable(true);
-            return;
-        }
-        System.err.println(longHelp());
     }
 
 }
