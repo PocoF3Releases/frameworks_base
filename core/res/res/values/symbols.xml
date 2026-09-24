@@ -6632,4 +6632,5 @@
   <!-- Disable the Video Capability over IWLAN when Wi-Fi Calling is turned off  -->
   <java-symbol type="bool" name="config_disable_video_capability_when_wfc_off" />
     <java-symbol type="bool" name="config_allowHbmWithoutTimeLimit" />
+  <java-symbol type="bool" name="config_cameraXiaomiVendorInputConfigurations" />
 </resources>
