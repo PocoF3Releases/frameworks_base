@@ -79,6 +79,7 @@ class HighBrightnessModeController {
     private final Runnable mRecalcRunnable;
     private final Clock mClock;
     private final Context mContext;
+    private final boolean mAllowHbmWithoutTimeLimit;
     private final SettingsObserver mSettingsObserver;
     private final Injector mInjector;
 
@@ -145,6 +146,8 @@ class HighBrightnessModeController {
             Runnable hbmChangeCallback, HighBrightnessModeMetadata hbmMetadata, Context context) {
         mInjector = injector;
         mContext = context;
+        mAllowHbmWithoutTimeLimit = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_allowHbmWithoutTimeLimit);
         mClock = injector.getClock();
         mHandler = handler;
         mBrightness = brightnessMin;
@@ -237,6 +240,13 @@ class HighBrightnessModeController {
         mUnthrottledBrightness = unthrottledBrightness;
         mThrottlingReason = throttlingReason;
 
+        // A zero timing window means this display has no HBM time quota.
+        // Avoid creating timing sessions/events which cannot consume a
+        // meaningful budget.
+        if (hasUnlimitedHbmTime()) {
+            recalculateTimeAllowance();
+            return;
+        }
         // If we are starting or ending a high brightness mode session, store the current
         // session in mRunningStartTimeMillis, or the old one in mEvents.
         final long runningStartTime = mHighBrightnessModeMetadata.getRunningStartTimeMillis();
@@ -453,10 +463,26 @@ class HighBrightnessModeController {
         return Math.max(0, mHbmData.timeMaxMillis - timeAlreadyUsed);
     }
 
-    /**
-     * Recalculates the allowable HBM time.
-     */
+    private boolean hasUnlimitedHbmTime() {
+        return mAllowHbmWithoutTimeLimit && deviceSupportsHbm()
+                && mHbmData.timeWindowMillis == 0
+                && mHbmData.timeMaxMillis == 0
+                && mHbmData.timeMinMillis == 0;
+    }
+
+    /** Recalculates the allowable HBM time. */
     private void recalculateTimeAllowance() {
+        // Vendor display configs may use 0/0/0 timing to represent
+        // unrestricted HBM. Without this special case, remainingTime is zero
+        // and brightness above the transition point causes a recalculation to
+        // be posted roughly every 1 ms.
+        if (hasUnlimitedHbmTime()) {
+            mIsTimeAvailable = true;
+            mHandler.removeCallbacks(mRecalcRunnable);
+            updateHbmMode();
+            return;
+        }
+
         final long currentTime = mClock.uptimeMillis();
         final long remainingTime = calculateRemainingTime(currentTime);
 
