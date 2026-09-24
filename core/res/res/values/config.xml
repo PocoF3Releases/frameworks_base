@@ -7770,4 +7770,7 @@
         It can only contain non-AOSP permissions outside of the android.*
         and com.android.* namespace. -->
     <string-array name="config_watchFacePermissions" translatable="false"/>
+
+    <!-- Allow vendor-managed HBM only on explicitly opted-in displays. -->
+    <bool name="config_allowHbmWithoutTimeLimit">false</bool>
 </resources>
