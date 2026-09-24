@@ -6351,4 +6351,5 @@
   <java-symbol type="string" name="trusted_location_settings_action" />
 
   <java-symbol type="bool" name="config_allowHbmWithoutTimeLimit" />
+  <java-symbol type="bool" name="config_cameraXiaomiVendorInputConfigurations" />
 </resources>

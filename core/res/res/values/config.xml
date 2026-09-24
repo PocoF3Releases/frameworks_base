@@ -7773,4 +7773,7 @@
 
     <!-- Allow vendor-managed HBM only on explicitly opted-in displays. -->
     <bool name="config_allowHbmWithoutTimeLimit">false</bool>
-</resources>
+
+    <!-- Accept additional reprocess inputs from xiaomi.scaler.availableStreamConfigurations.
+         Enable only with a provider implementing that four-int HAL tuple contract. -->
+    <bool name="config_cameraXiaomiVendorInputConfigurations">false</bool></resources>
