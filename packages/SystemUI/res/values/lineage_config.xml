@@ -87,4 +87,8 @@
 
     <!-- Whether to play turbulence noise after clicking the play button -->
     <bool name="config_turbulenceNoise">true</bool>
+
+    <!-- Show a screen-recording blur control and default to suppressing expensive
+         SystemUI cross-window blur while recording. Device opt-in only. -->
+    <bool name="config_screenRecorderDisableBlur">false</bool>
 </resources>

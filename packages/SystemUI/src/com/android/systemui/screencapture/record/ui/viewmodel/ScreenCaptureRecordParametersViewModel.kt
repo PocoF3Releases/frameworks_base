@@ -73,6 +73,9 @@ constructor(
             interactor.shouldShowFrontCamera = value
         }
 
+    val blurControlSupported: Boolean by interactor::blurControlSupported
+    val keepBlur: Boolean by interactor::keepBlur
+
     val lowQuality: Boolean by interactor::lowQuality
 
     val longerDuration: Boolean by interactor::longerDuration
@@ -150,6 +153,10 @@ constructor(
 
     suspend fun onCameraHintShown() {
         screenCaptureCameraHintInteractor.onHintShown()
+    }
+
+    fun setKeepBlur(keepBlur: Boolean) {
+        interactor.keepBlur = keepBlur
     }
 
     fun setLowQuality(lowQuality: Boolean) {

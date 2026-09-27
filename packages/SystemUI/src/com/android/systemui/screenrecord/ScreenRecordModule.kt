@@ -62,6 +62,11 @@ import java.util.concurrent.Executor
 @Module
 interface ScreenRecordModule {
 
+    @Binds
+    @IntoMap
+    @ClassKey(ScreenRecordingBlurController::class)
+    fun bindScreenRecordingBlurController(controller: ScreenRecordingBlurController): CoreStartable
+
     /** Inject ScreenRecordTile into tileMap in QSModule */
     @Binds
     @IntoMap
