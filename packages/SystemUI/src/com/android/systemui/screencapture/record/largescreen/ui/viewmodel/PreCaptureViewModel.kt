@@ -241,6 +241,8 @@ constructor(
                     lowQuality = false,
                     longerDuration = false,
                     hevc = false,
+                    maxFps = screenCaptureRecordParametersViewModel.maxFpsSupported &&
+                        screenCaptureRecordParametersViewModel.maxFps == true,
                 )
             )
         }

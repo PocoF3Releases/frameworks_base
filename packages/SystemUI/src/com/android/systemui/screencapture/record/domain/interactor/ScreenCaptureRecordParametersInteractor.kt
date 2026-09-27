@@ -29,6 +29,13 @@ constructor(private val repository: ScreenCaptureRecordParametersRepository) {
 
     val parameters = repository.parameters
 
+    val maxFpsSupported: Boolean
+        get() = repository.maxFpsSupported
+
+    fun setMaxFps(value: Boolean) {
+        repository.updateParameters { it.copy(maxFps = value) }
+    }
+
     fun setAudioSource(audioSource: ScreenRecordingAudioSource) {
         repository.updateParameters { it.copy(audioSource = audioSource) }
     }

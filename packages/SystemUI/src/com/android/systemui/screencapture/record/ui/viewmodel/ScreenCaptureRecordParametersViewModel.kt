@@ -30,6 +30,18 @@ class ScreenCaptureRecordParametersViewModel
 constructor(private val interactor: ScreenCaptureRecordParametersInteractor) :
     HydratedActivatable() {
 
+    val maxFpsSupported: Boolean
+        get() = interactor.maxFpsSupported
+
+    val maxFps: Boolean? by
+        interactor.parameters
+            .map { it.maxFps }
+            .hydratedStateOf("ScreenCaptureRecordParametersViewModel#maxFps", null)
+
+    fun setMaxFps(value: Boolean) {
+        interactor.setMaxFps(value)
+    }
+
     val audioSource: ScreenRecordingAudioSource? by
         interactor.parameters
             .map { it.audioSource }

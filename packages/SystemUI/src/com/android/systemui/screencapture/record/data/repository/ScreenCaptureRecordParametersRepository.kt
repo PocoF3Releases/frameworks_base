@@ -16,6 +16,9 @@
 
 package com.android.systemui.screencapture.record.data.repository
 
+import android.content.Context
+import com.android.systemui.dagger.qualifiers.Application
+import com.android.systemui.res.R
 import android.view.Display
 import com.android.systemui.screencapture.common.ScreenCaptureUiScope
 import com.android.systemui.screencapture.common.shared.model.ScreenCaptureTarget
@@ -27,7 +30,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 @ScreenCaptureUiScope
-class ScreenCaptureRecordParametersRepository @Inject constructor() {
+class ScreenCaptureRecordParametersRepository @Inject constructor(@Application private val context: Context) {
+
+    val maxFpsSupported: Boolean
+        get() = context.resources.getBoolean(R.bool.config_screenRecorderHighRefreshRate)
 
     private val _parameters =
         MutableStateFlow(
