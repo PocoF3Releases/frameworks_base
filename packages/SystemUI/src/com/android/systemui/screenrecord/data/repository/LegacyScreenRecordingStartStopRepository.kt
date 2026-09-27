@@ -51,6 +51,7 @@ constructor(private val userContextProvider: UserContextProvider) :
                             longerDuration,
                             hevc,
                             keepScreenAwake,
+                            maxFps,
                         )
                         .putExtra(
                             RecordingService.EXTRA_SHOW_FRONT_CAMERA,

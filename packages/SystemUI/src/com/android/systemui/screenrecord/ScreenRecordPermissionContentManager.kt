@@ -112,6 +112,9 @@ class ScreenRecordPermissionContentManager(
     private lateinit var tapsSwitch: Switch
     private lateinit var audioSwitch: Switch
     private lateinit var lowQualitySwitch: Switch
+    private lateinit var maxFpsSwitch: Switch
+    private lateinit var maxFpsView: View
+    private var maxFpsControlEnabled = false
     private lateinit var longerDurationSwitch: Switch
     private lateinit var skipTimeSwitch: Switch
     private lateinit var hevcSwitch: Switch
@@ -166,6 +169,11 @@ class ScreenRecordPermissionContentManager(
         audioSwitch = containerView.requireViewById(R.id.screenrecord_audio_switch)
         tapsSwitch = containerView.requireViewById(R.id.screenrecord_taps_switch)
         lowQualitySwitch = containerView.requireViewById(R.id.screenrecord_lowquality_switch)
+        maxFpsSwitch = containerView.requireViewById(R.id.screenrecord_max_fps_switch)
+        maxFpsView = containerView.requireViewById(R.id.show_max_fps)
+        maxFpsControlEnabled =
+            containerView.context.resources.getBoolean(R.bool.config_screenRecorderHighRefreshRate)
+        maxFpsView.visibility = if (maxFpsControlEnabled) VISIBLE else GONE
         longerDurationSwitch =
             containerView.requireViewById(R.id.screenrecord_longer_timeout_switch)
         skipTimeSwitch = containerView.requireViewById(R.id.screenrecord_skip_time_switch)
@@ -180,6 +188,8 @@ class ScreenRecordPermissionContentManager(
         audioSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
         tapsSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
         lowQualitySwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
+        maxFpsSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
+        lowQualitySwitch.setOnCheckedChangeListener { _, _ -> updateMaxFpsAvailability() }
         longerDurationSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
         skipTimeSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
         hevcSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
@@ -218,11 +228,18 @@ class ScreenRecordPermissionContentManager(
         options.isLongClickable = false
 
         loadPrefs()
+        updateMaxFpsAvailability()
     }
 
     override fun onItemSelected(adapterView: AdapterView<*>?, view: View, pos: Int, id: Long) {
         super.onItemSelected(adapterView, view, pos, id)
         updateTapsViewVisibility()
+    }
+
+    private fun updateMaxFpsAvailability() {
+        val enabled = maxFpsControlEnabled && !lowQualitySwitch.isChecked
+        maxFpsSwitch.isEnabled = enabled
+        maxFpsView.alpha = if (enabled) 1f else 0.5f
     }
 
     private fun updateTapsViewVisibility() {
@@ -246,6 +263,7 @@ class ScreenRecordPermissionContentManager(
             if (audioSwitch.isChecked) options.selectedItem as ScreenRecordingAudioSource
             else ScreenRecordingAudioSource.NONE
         val lowQuality = lowQualitySwitch.isChecked
+        val maxFps = maxFpsControlEnabled && !lowQuality && maxFpsSwitch.isChecked
         val longerDuration = longerDurationSwitch.isChecked
         val skipTime = skipTimeSwitch.isChecked
         val hevc = hevcSwitch.isChecked
@@ -267,6 +285,7 @@ class ScreenRecordPermissionContentManager(
                         longerDuration = longerDuration,
                         hevc = hevc,
                         keepScreenAwake = keepAwake,
+                        maxFps = maxFps,
                     )
                 )
             },
@@ -302,6 +321,9 @@ class ScreenRecordPermissionContentManager(
         Prefs.putInt(userContext, PREF_SKIP, if (skipTimeSwitch.isChecked) 1 else 0)
         Prefs.putInt(userContext, PREF_HEVC, if (hevcSwitch.isChecked) 1 else 0)
         Prefs.putInt(userContext, PREF_KEEP_AWAKE, if (keepAwakeSwitch.isChecked) 1 else 0)
+        if (maxFpsControlEnabled) {
+            Prefs.putInt(userContext, PREF_MAX_FPS, if (maxFpsSwitch.isChecked) 1 else 0)
+        }
     }
 
     private fun loadPrefs() {
@@ -314,6 +336,7 @@ class ScreenRecordPermissionContentManager(
         skipTimeSwitch.isChecked = Prefs.getInt(userContext, PREF_SKIP, 0) == 1
         hevcSwitch.isChecked = Prefs.getInt(userContext, PREF_HEVC, 1) == 1
         keepAwakeSwitch.isChecked = Prefs.getInt(userContext, PREF_KEEP_AWAKE, 0) == 1
+        maxFpsSwitch.isChecked = Prefs.getInt(userContext, PREF_MAX_FPS, 1) == 1
     }
 
     private inner class CaptureTargetResultReceiver :
@@ -352,6 +375,7 @@ class ScreenRecordPermissionContentManager(
         private const val PREF_SKIP = "screenrecord_skip_timer"
         private const val PREF_HEVC = "screenrecord_use_hevc"
         private const val PREF_KEEP_AWAKE = "screenrecord_keep_screen_awake"
+        private const val PREF_MAX_FPS = "screenrecord_max_fps"
 
         fun createOptionList(displayManager: DisplayManager): List<ScreenShareOption> {
             val connectedDisplays = getConnectedDisplays(displayManager)

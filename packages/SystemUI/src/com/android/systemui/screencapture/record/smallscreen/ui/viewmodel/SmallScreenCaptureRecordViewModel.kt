@@ -257,6 +257,10 @@ constructor(
         val longerDuration = recordDetailsParametersViewModel.longerDuration
         val hevc = recordDetailsParametersViewModel.hevc
         val keepScreenAwake = recordDetailsParametersViewModel.keepScreenAwake
+        val maxFps =
+            recordDetailsParametersViewModel.maxFpsSupported &&
+                !lowQuality &&
+                recordDetailsParametersViewModel.maxFps
         when (target) {
             is ScreenCaptureTarget.Fullscreen -> {
                 val shouldShowTaps = recordDetailsParametersViewModel.shouldShowTaps
@@ -273,6 +277,7 @@ constructor(
                         shouldShowFrontCamera =
                             recordDetailsParametersViewModel.canUseFrontCamera &&
                                 recordDetailsParametersViewModel.shouldShowFrontCamera,
+                        maxFps = maxFps,
                     )
                 )
             }
@@ -314,6 +319,7 @@ constructor(
                         hevc = hevc,
                         keepScreenAwake = keepScreenAwake,
                         shouldShowFrontCamera = false,
+                        maxFps = maxFps,
                     )
                 )
             }

@@ -287,7 +287,9 @@ open class ScreenRecordingService : ComponentService() {
                             parameters.lowQuality,
                             parameters.longerDuration,
                             parameters.hevc,
-                        ),
+                        ).apply {
+                            setUseMaximumFrameRate(parameters.maxFps)
+                        },
                 )
             if (context.startRecording()) {
                 recordingContext = context

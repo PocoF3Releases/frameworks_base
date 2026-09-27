@@ -75,6 +75,8 @@ constructor(
     val longerDuration: Boolean by interactor::longerDuration
 
     val hevc: Boolean by interactor::hevc
+    val maxFpsSupported: Boolean by interactor::maxFpsSupported
+    val maxFps: Boolean by interactor::maxFps
 
     val keepScreenAwake: Boolean by interactor::keepScreenAwake
 
@@ -158,6 +160,10 @@ constructor(
 
     fun setKeepScreenAwake(keepScreenAwake: Boolean) {
         interactor.keepScreenAwake = keepScreenAwake
+    }
+
+    fun setMaxFps(maxFps: Boolean) {
+        interactor.maxFps = maxFps
     }
 
     @AssistedFactory

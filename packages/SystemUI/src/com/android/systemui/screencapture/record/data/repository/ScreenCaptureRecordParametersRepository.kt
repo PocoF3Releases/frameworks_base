@@ -19,6 +19,7 @@ package com.android.systemui.screencapture.record.data.repository
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.android.systemui.Prefs
+import com.android.systemui.res.R
 import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.screencapture.common.ScreenCaptureScope
 import com.android.systemui.screenrecord.ScreenRecordingAudioSource
@@ -32,6 +33,9 @@ constructor(@Application private val context: Context, private val userTracker: 
 
     private val userContext: Context
         get() = context.createContextAsUser(userTracker.userHandle, 0)
+
+    val maxFpsSupported: Boolean
+        get() = context.resources.getBoolean(R.bool.config_screenRecorderHighRefreshRate)
 
     private val audioSourceState = mutableStateOf(loadAudioSource())
     var audioSource: ScreenRecordingAudioSource
@@ -101,6 +105,15 @@ constructor(@Application private val context: Context, private val userTracker: 
             Prefs.putInt(userContext, PREF_KEEP_AWAKE, if (value) 1 else 0)
         }
 
+    private val maxFpsState =
+        mutableStateOf(Prefs.getInt(userContext, PREF_MAX_FPS, 1) == 1)
+    var maxFps: Boolean
+        get() = maxFpsState.value
+        set(value) {
+            maxFpsState.value = value
+            Prefs.putInt(userContext, PREF_MAX_FPS, if (value) 1 else 0)
+        }
+
     private fun loadAudioSource(): ScreenRecordingAudioSource {
         val useAudio = Prefs.getInt(userContext, PREF_AUDIO, 0) == 1
         if (!useAudio) return ScreenRecordingAudioSource.NONE
@@ -126,5 +139,6 @@ constructor(@Application private val context: Context, private val userTracker: 
         private const val PREF_AUDIO_SOURCE = "screenrecord_audio_source"
         private const val PREF_HEVC = "screenrecord_use_hevc"
         private const val PREF_KEEP_AWAKE = "screenrecord_keep_screen_awake"
+        private const val PREF_MAX_FPS = "screenrecord_max_fps"
     }
 }
