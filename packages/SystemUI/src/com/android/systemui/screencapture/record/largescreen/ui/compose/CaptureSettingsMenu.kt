@@ -151,6 +151,21 @@ fun CaptureSettingsMenu(viewModel: PreCaptureToolbarViewModel, screenRecordingSe
                 )
             }
 
+            if (recordParameters.maxFpsSupported) {
+                val maxFpsIcon by
+                    loadIcon(
+                        viewModel = viewModel,
+                        resId = R.drawable.ic_screenrecord_max_fps,
+                        contentDescription = null,
+                    )
+                SettingsMenuItem(
+                    text = stringResource(R.string.screenrecord_max_fps_label),
+                    leadingIcon = maxFpsIcon,
+                    checked = recordParameters.maxFps,
+                    onCheckedChange = { recordParameters.setMaxFps(it) },
+                    enabled = screenRecordingSelected && !recordParameters.lowQuality,
+                )
+            }
             val lowQualityIcon by
                 loadIcon(
                     viewModel = viewModel,
