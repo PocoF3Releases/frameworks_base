@@ -62,6 +62,15 @@ constructor(
         }
         get() = repository.shouldShowFrontCamera
 
+    val blurControlSupported: Boolean
+        get() = repository.blurControlSupported
+
+    var keepBlur: Boolean
+        set(value) {
+            repository.keepBlur = value
+        }
+        get() = repository.keepBlur
+
     var lowQuality: Boolean
         set(value) {
             repository.lowQuality = value
