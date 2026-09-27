@@ -78,6 +78,8 @@ constructor(
     val longerDuration: Boolean by interactor::longerDuration
 
     val hevc: Boolean by interactor::hevc
+    val maxFpsSupported: Boolean by interactor::maxFpsSupported
+    val maxFps: Boolean by interactor::maxFps
 
     var shouldRecordDevice: Boolean
         get() =
@@ -160,6 +162,10 @@ constructor(
 
     fun setHevc(hevc: Boolean) {
         interactor.hevc = hevc
+    }
+
+    fun setMaxFps(maxFps: Boolean) {
+        interactor.maxFps = maxFps
     }
 
     @AssistedFactory
