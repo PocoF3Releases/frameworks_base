@@ -90,4 +90,7 @@
 
     <!-- Whether to force notifications to take up the full width of the screen in landscape -->
     <bool name="config_fullWidthNotificationsInLandscape">false</bool>
+    <!-- Show a screen-recording blur control and default to suppressing expensive
+         SystemUI cross-window blur while recording. Device opt-in only. -->
+    <bool name="config_screenRecorderDisableBlur">false</bool>
 </resources>
