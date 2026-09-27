@@ -21,6 +21,7 @@ import android.provider.Settings
 import android.content.res.Resources
 import android.os.SystemProperties
 import android.util.MathUtils
+import android.view.CrossWindowBlurListeners
 import android.view.CrossWindowBlurListeners.CROSS_WINDOW_BLUR_SUPPORTED
 import android.view.SurfaceControl
 import android.view.ViewRootImpl
@@ -88,19 +89,23 @@ class BlurUtils(
         if (viewRootImpl == null || !viewRootImpl.surfaceControl.isValid) {
             return
         }
+        val blurSupported = supportsBlursOnWindows()
+        val appliedRadius = if (blurSupported) radius else 0
         createTransaction().use {
-            if (supportsBlursOnWindows()) {
-                it.setBackgroundBlurRadius(viewRootImpl.surfaceControl, radius)
-                if (!earlyWakeupEnabled && lastAppliedBlur == 0 && radius != 0) {
-                    it.setEarlyWakeupStart(earlyWakeupInfo)
-                    earlyWakeupEnabled = true
-                }
-                if (earlyWakeupEnabled && lastAppliedBlur != 0 && radius == 0) {
-                    it.setEarlyWakeupEnd(earlyWakeupInfo)
-                    earlyWakeupEnabled = false
-                }
-                lastAppliedBlur = radius
+            // Clear a previously applied radius even if policy changed mid-animation.
+            if (blurSupported || lastAppliedBlur != 0) {
+                it.setBackgroundBlurRadius(viewRootImpl.surfaceControl, appliedRadius)
             }
+            if (!earlyWakeupEnabled && lastAppliedBlur == 0 && appliedRadius != 0) {
+                it.setEarlyWakeupStart(earlyWakeupInfo)
+                earlyWakeupEnabled = true
+            }
+            // Preparation can be cancelled before a nonzero radius is ever applied.
+            if (earlyWakeupEnabled && appliedRadius == 0) {
+                it.setEarlyWakeupEnd(earlyWakeupInfo)
+                earlyWakeupEnabled = false
+            }
+            lastAppliedBlur = appliedRadius
             it.setOpaque(viewRootImpl.surfaceControl, opaque)
             it.apply()
         }
@@ -116,6 +121,7 @@ class BlurUtils(
      */
     fun supportsBlursOnWindows(): Boolean {
         return CROSS_WINDOW_BLUR_SUPPORTED &&
+                CrossWindowBlurListeners.getInstance().isCrossWindowBlurEnabled &&
                 ActivityManager.isHighEndGfx() &&
                 !SystemProperties.getBoolean("persist.sysui.disableBlur", false) &&
                 !areBlursDisabled()

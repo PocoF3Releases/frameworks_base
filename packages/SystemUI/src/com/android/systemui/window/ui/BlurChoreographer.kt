@@ -112,7 +112,10 @@ class DefaultBlurChoreographer(
             }
             lastScheduledBlurEffect = blurEffect
             return
-        } else if (lastScheduledBlurEffect == blurEffect) {
+        } else if (
+            lastScheduledBlurEffect.radius.toInt() == newBlurRadius &&
+                lastScheduledBlurEffect.scale == blurEffect.scale
+        ) {
             logger.logSkipApplyBlur(
                 blurEffect,
                 wasUpdateScheduledForThisFrame,

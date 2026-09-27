@@ -72,6 +72,18 @@ constructor(@Application private val context: Context, private val userTracker: 
         shouldShowFrontCameraState.value = Prefs.getInt(userContext, PREF_FRONT_CAMERA, 0) == 1
     }
 
+    val blurControlSupported: Boolean
+        get() = context.resources.getBoolean(com.android.systemui.res.R.bool.config_screenRecorderDisableBlur)
+
+    private val keepBlurState =
+        mutableStateOf(Prefs.getInt(userContext, PREF_KEEP_BLUR, 0) == 1)
+    var keepBlur: Boolean
+        get() = keepBlurState.value
+        set(value) {
+            keepBlurState.value = value
+            Prefs.putInt(userContext, PREF_KEEP_BLUR, if (value) 1 else 0)
+        }
+
     private val lowQualityState = mutableStateOf(Prefs.getInt(userContext, PREF_LOW, 0) == 1)
     var lowQuality: Boolean
         get() = lowQualityState.value
@@ -131,6 +143,7 @@ constructor(@Application private val context: Context, private val userTracker: 
     }
 
     companion object {
+        private const val PREF_KEEP_BLUR = "screenrecord_keep_blur"
         private const val PREF_TAPS = "screenrecord_show_taps"
         private const val PREF_FRONT_CAMERA = "screenrecord_show_front_camera"
         private const val PREF_LOW = "screenrecord_use_low_quality"

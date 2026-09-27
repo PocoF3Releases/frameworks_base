@@ -145,7 +145,7 @@ open class ScreenRecordingService : ComponentService() {
         if (shouldShowSeconds) {
             screenRecordingPreferenceRepository.setShouldShowSeconds(shouldShowSeconds)
         }
-        try {
+        return try {
             Log.d(tag, "Starting screen recording user=$userId $this")
             updateWakeLock(keepScreenAwake = keepScreenAwake, held = true)
             val notification = notificationInteractor.createRecordingNotification(audioSource)
@@ -161,7 +161,7 @@ open class ScreenRecordingService : ComponentService() {
                 displayId,
                 captureTarget == null && shouldShowFrontCamera,
             )
-            return true
+            true
         } catch (e: Exception) {
             clearCameraOverlay()
             updateWakeLock(keepScreenAwake = keepScreenAwake, held = false)
@@ -169,11 +169,17 @@ open class ScreenRecordingService : ComponentService() {
             Log.e(tag, "Error starting screen recording", e)
             notificationInteractor.notifyErrorStarting(notificationId)
             showToast(R.string.screenrecord_start_error)
+
+            // The repository optimistically transitions to Started before making this Binder call.
+            // Report the failure so it rolls the controller/UI (including recording blur state)
+            // back to Stopped instead of leaving a phantom recording active.
+            launchCallbackAction { onRecordingInterrupted(userId, StopReason.STOP_ERROR) }
+
             if (Flags.screenRecordingServiceFix()) {
                 stopForeground(STOP_FOREGROUND_DETACH)
             }
             stopSelf()
-            return false
+            false
         }
     }
 
