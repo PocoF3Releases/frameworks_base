@@ -28,4 +28,5 @@ data class ScreenCaptureRecordParametersModel(
     val lowQuality: Boolean,
     val longerDuration: Boolean,
     val hevc: Boolean,
+    val maxFps: Boolean = true,
 )

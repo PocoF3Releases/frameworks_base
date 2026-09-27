@@ -92,6 +92,15 @@ fun CaptureSettingsMenu(viewModel: PreCaptureViewModel) {
                 onCheckedChange = { recordParameters.shouldRecordMicrophone = it },
                 enabled = isScreenRecording,
             )
+            if (recordParameters.maxFpsSupported) {
+                SettingsMenuItem(
+                    text = stringResource(R.string.screenrecord_max_fps_label),
+                    leadingIcon = null,
+                    checked = recordParameters.maxFps == true,
+                    onCheckedChange = { recordParameters.setMaxFps(it) },
+                    enabled = isScreenRecording && recordParameters.lowQuality != true,
+                )
+            }
             SettingsMenuItem(
                 text = stringResource(R.string.screen_capture_front_camera),
                 leadingIcon = { icons?.frontCamera?.let { Icon(icon = it) } },

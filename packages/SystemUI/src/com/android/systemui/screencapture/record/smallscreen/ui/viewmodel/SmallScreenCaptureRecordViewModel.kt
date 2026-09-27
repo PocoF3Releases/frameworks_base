@@ -138,6 +138,8 @@ constructor(
         val lowQuality = recordDetailsParametersViewModel.lowQuality ?: return
         val longerDuration = recordDetailsParametersViewModel.longerDuration ?: return
         val hevc = recordDetailsParametersViewModel.hevc ?: return
+        val maxFps = recordDetailsParametersViewModel.maxFpsSupported &&
+            !lowQuality && recordDetailsParametersViewModel.maxFps == true
         when (target) {
             is ScreenCaptureTarget.Fullscreen -> {
                 val shouldShowTaps = recordDetailsParametersViewModel.shouldShowTaps ?: return
@@ -150,6 +152,7 @@ constructor(
                         lowQuality = lowQuality,
                         longerDuration = longerDuration,
                         hevc = hevc,
+                        maxFps = maxFps,
                     )
                 )
             }
@@ -178,6 +181,7 @@ constructor(
                         lowQuality = lowQuality,
                         longerDuration = longerDuration,
                         hevc = hevc,
+                        maxFps = maxFps,
                     )
                 )
             }

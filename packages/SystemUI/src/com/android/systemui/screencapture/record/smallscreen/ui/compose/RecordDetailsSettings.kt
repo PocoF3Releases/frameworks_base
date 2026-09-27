@@ -123,6 +123,18 @@ fun RecordDetailsSettings(
                 onCheckedChange = { parametersViewModel.setShouldShowFrontCamera(it) },
                 modifier = Modifier,
             )
+            if (parametersViewModel.maxFpsSupported && parametersViewModel.lowQuality != true) {
+                RichSwitch(
+                    icon = loadIcon(
+                        viewModel = drawableLoaderViewModel,
+                        resId = R.drawable.ic_screenrecord_max_fps,
+                        contentDescription = null,
+                    ),
+                    label = stringResource(R.string.screenrecord_max_fps_label),
+                    checked = parametersViewModel.maxFps == true,
+                    onCheckedChange = { parametersViewModel.setMaxFps(it) },
+                )
+            }
             AnimatedVisibility(
                 targetViewModel.currentTarget is RecordDetailsTargetItemViewModel.EntireScreen
             ) {

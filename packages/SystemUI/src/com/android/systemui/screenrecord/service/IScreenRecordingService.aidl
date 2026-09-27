@@ -30,6 +30,6 @@ interface IScreenRecordingService {
         boolean shouldShowTaps,
         boolean lowQuality,
         boolean longerDuration,
-        boolean hevc
+        boolean hevc, boolean maxFps
     );
 }

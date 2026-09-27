@@ -27,4 +27,5 @@ data class ScreenRecordingParameters(
     val lowQuality: Boolean,
     val longerDuration: Boolean,
     val hevc: Boolean,
+    val maxFps: Boolean = false,
 )

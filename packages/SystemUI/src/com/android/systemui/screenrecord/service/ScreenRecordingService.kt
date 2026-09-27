@@ -221,6 +221,7 @@ protected constructor(
             lowQuality: Boolean,
             longerDuration: Boolean,
             hevc: Boolean,
+            maxFps: Boolean,
         ) {
             val screenRecordingAudioSource = ScreenRecordingAudioSource.entries[audioSource]
             RecordingContext(
@@ -242,7 +243,7 @@ protected constructor(
                             lowQuality,
                             longerDuration,
                             hevc,
-                        ),
+                        ).apply { setUseMaximumFrameRate(maxFps) },
                 )
                 .also { context ->
                     recordingContext = context
