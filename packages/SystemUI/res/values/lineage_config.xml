@@ -87,4 +87,7 @@
 
     <!-- Whether to play turbulence noise after clicking the play button -->
     <bool name="config_turbulenceNoise">true</bool>
+    <!-- Allow users to keep blur while recording; otherwise suppress it during recording. -->
+    <bool name="config_screenRecorderDisableBlur">false</bool>
+
 </resources>

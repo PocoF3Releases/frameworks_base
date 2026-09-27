@@ -71,6 +71,15 @@ fun CaptureSettingsMenu(viewModel: PreCaptureViewModel) {
             offset = DpOffset(x = 0.dp, y = 28.dp),
             shape = RoundedCornerShape(28.dp),
         ) {
+            if (recordParameters.blurControlSupported) {
+                SettingsMenuItem(
+                    text = stringResource(R.string.screenrecord_keep_blur_label),
+                    leadingIcon = null,
+                    checked = recordParameters.keepBlur,
+                    onCheckedChange = { recordParameters.setKeepBlur(it) },
+                    enabled = isScreenRecording,
+                )
+            }
             SettingsMenuItem(
                 text = stringResource(R.string.screen_capture_show_clicks_and_keys),
                 leadingIcon = { icons?.showClicks?.let { Icon(icon = it) } },
