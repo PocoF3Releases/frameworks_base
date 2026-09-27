@@ -37,6 +37,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import com.android.systemui.screenrecord.ScreenRecordingBlurState
 import kotlinx.coroutines.flow.stateIn
 
 typealias BlurAppliedListener = Consumer<Int>
@@ -102,6 +104,9 @@ constructor(
                 sendUpdate(crossWindowBlurListeners.isCrossWindowBlurEnabled)
 
                 awaitClose { crossWindowBlurListeners.removeListener(sendUpdate) }
+            }
+            .combine(ScreenRecordingBlurState.recordingActive) { allowed, recording ->
+                allowed && !recording
             } // stateIn because this is backed by a binder call.
             .stateIn(scope, SharingStarted.WhileSubscribed(), false)
 

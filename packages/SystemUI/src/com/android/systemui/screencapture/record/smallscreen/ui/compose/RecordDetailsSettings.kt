@@ -68,6 +68,18 @@ fun RecordDetailsSettings(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
         ) {
+            if (parametersViewModel.blurControlSupported) {
+                RichSwitch(
+                    icon = loadIcon(
+                        viewModel = drawableLoaderViewModel,
+                        resId = R.drawable.ic_screenrecord_blur,
+                        contentDescription = null,
+                    ),
+                    label = stringResource(R.string.screenrecord_keep_blur_label),
+                    checked = parametersViewModel.keepBlur,
+                    onCheckedChange = { parametersViewModel.setKeepBlur(it) },
+                )
+            }
             AnimatedVisibility(visible = targetViewModel.canChangeTarget) {
                 CaptureTargetSelector(
                     items = targetViewModel.items,

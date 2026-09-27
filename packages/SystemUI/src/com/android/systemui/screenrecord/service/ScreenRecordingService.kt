@@ -124,7 +124,7 @@ protected constructor(
 
     override fun onBind(intent: Intent): IBinder = binder
 
-    private fun RecordingContext.startRecording() {
+    private fun RecordingContext.startRecording(): Boolean {
         try {
             Log.d(tag, "Starting screen recording user=$userId $this")
             if (Flags.restoreShowTapsSetting()) {
@@ -137,6 +137,7 @@ protected constructor(
                 notificationId = notificationId,
                 audioSource = audioSource,
             )
+            return true
         } catch (e: Exception) {
             if (Flags.restoreShowTapsSetting()) {
                 preferenceUtil.restoreShowTapsSetting()
@@ -146,7 +147,9 @@ protected constructor(
             Log.d(tag, "Error starting screen recording", e)
             notificationInteractor.notifyErrorStarting(notificationId)
             showToast(R.string.screenrecord_start_error)
+            launchCallbackAction { onRecordingInterrupted(userId, StopReason.STOP_ERROR) }
             stopSelf()
+            return false
         }
     }
 
@@ -246,8 +249,9 @@ protected constructor(
                         ).apply { setUseMaximumFrameRate(maxFps) },
                 )
                 .also { context ->
-                    recordingContext = context
-                    context.startRecording()
+                    if (context.startRecording()) {
+                        recordingContext = context
+                    }
                 }
         }
     }

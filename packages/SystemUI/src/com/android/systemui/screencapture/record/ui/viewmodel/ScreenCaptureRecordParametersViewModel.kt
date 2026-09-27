@@ -16,6 +16,13 @@
 
 package com.android.systemui.screencapture.record.ui.viewmodel
 
+import android.content.Context
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.android.systemui.Prefs
+import com.android.systemui.dagger.qualifiers.Application
+import com.android.systemui.settings.UserContextProvider
+import com.android.systemui.res.R
 import androidx.compose.runtime.getValue
 import com.android.systemui.lifecycle.HydratedActivatable
 import com.android.systemui.screencapture.common.shared.model.ScreenCaptureTarget
@@ -27,7 +34,11 @@ import kotlinx.coroutines.flow.map
 
 class ScreenCaptureRecordParametersViewModel
 @AssistedInject
-constructor(private val interactor: ScreenCaptureRecordParametersInteractor) :
+constructor(
+    private val interactor: ScreenCaptureRecordParametersInteractor,
+    @Application context: Context,
+    private val userContextProvider: UserContextProvider,
+) :
     HydratedActivatable() {
 
     val maxFpsSupported: Boolean
@@ -76,6 +87,18 @@ constructor(private val interactor: ScreenCaptureRecordParametersInteractor) :
         interactor.parameters
             .map { it.hevc }
             .hydratedStateOf("ScreenCaptureAudioSourceViewModel#hevc", null)
+
+    val blurControlSupported = context.resources.getBoolean(R.bool.config_screenRecorderDisableBlur)
+    private var keepBlurState by mutableStateOf(
+        Prefs.getInt(userContextProvider.userContext, "screenrecord_keep_blur", 0) == 1
+    )
+    val keepBlur: Boolean
+        get() = keepBlurState
+
+    fun setKeepBlur(value: Boolean) {
+        keepBlurState = value
+        Prefs.putInt(userContextProvider.userContext, "screenrecord_keep_blur", if (value) 1 else 0)
+    }
 
     var shouldRecordDevice: Boolean
         get() =

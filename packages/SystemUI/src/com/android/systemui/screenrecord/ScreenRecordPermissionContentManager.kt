@@ -119,6 +119,9 @@ class ScreenRecordPermissionContentManager(
     private lateinit var skipTimeSwitch: CompoundButton
     private lateinit var hevcSwitch: CompoundButton
     private lateinit var tapsView: View
+    private lateinit var blurSwitch: CompoundButton
+    private lateinit var blurView: View
+    private var blurControlEnabled = false
     private lateinit var options: Spinner
 
     override fun bind(view: View) {
@@ -175,6 +178,12 @@ class ScreenRecordPermissionContentManager(
         skipTimeSwitch = containerView.requireViewById(R.id.screenrecord_skip_time_switch)
         hevcSwitch = containerView.requireViewById(R.id.screenrecord_hevc_switch)
 
+        blurSwitch = containerView.requireViewById(R.id.screenrecord_blur_switch)
+        blurView = containerView.requireViewById(R.id.show_blur)
+        blurControlEnabled =
+            containerView.context.resources.getBoolean(R.bool.config_screenRecorderDisableBlur)
+        blurView.visibility = if (blurControlEnabled) VISIBLE else GONE
+
         tapsView = containerView.requireViewById(R.id.show_taps)
         updateTapsViewVisibility()
 
@@ -188,6 +197,8 @@ class ScreenRecordPermissionContentManager(
         longerDurationSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
         skipTimeSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
         hevcSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
+
+        blurSwitch.setOnTouchListener { _, event -> event.action == ACTION_MOVE }
 
         options = containerView.requireViewById(R.id.screen_recording_options)
         val a: ArrayAdapter<*> =
@@ -306,6 +317,9 @@ class ScreenRecordPermissionContentManager(
     private fun savePrefs() {
         val userContext = containerView.context
         Prefs.putInt(userContext, PREF_TAPS, if (tapsSwitch.isChecked) 1 else 0)
+        if (blurControlEnabled) {
+            Prefs.putInt(userContext, PREF_KEEP_BLUR, if (blurSwitch.isChecked) 1 else 0)
+        }
         Prefs.putInt(userContext, PREF_LOW, if (lowQualitySwitch.isChecked) 1 else 0)
         Prefs.putInt(userContext, PREF_LONGER, if (longerDurationSwitch.isChecked) 1 else 0)
         Prefs.putInt(userContext, PREF_AUDIO, if (audioSwitch.isChecked) 1 else 0)
@@ -320,6 +334,7 @@ class ScreenRecordPermissionContentManager(
     private fun loadPrefs() {
         val userContext = containerView.context
         tapsSwitch.isChecked = Prefs.getInt(userContext, PREF_TAPS, 0) == 1
+        blurSwitch.isChecked = Prefs.getInt(userContext, PREF_KEEP_BLUR, 0) == 1
         lowQualitySwitch.isChecked = Prefs.getInt(userContext, PREF_LOW, 0) == 1
         longerDurationSwitch.isChecked = Prefs.getInt(userContext, PREF_LONGER, 0) == 1
         audioSwitch.isChecked = Prefs.getInt(userContext, PREF_AUDIO, 0) == 1
@@ -358,6 +373,7 @@ class ScreenRecordPermissionContentManager(
         private const val INTERVAL_MS: Long = 1000
 
         private const val PREF_TAPS = "screenrecord_show_taps"
+        private const val PREF_KEEP_BLUR = "screenrecord_keep_blur"
         private const val PREF_LOW = "screenrecord_use_low_quality"
         private const val PREF_LONGER = "screenrecord_use_longer_timeout"
         private const val PREF_AUDIO = "screenrecord_use_audio"

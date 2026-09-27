@@ -62,6 +62,11 @@ interface ScreenRecordModule {
 
     @Binds fun bindScreenRecordRepository(impl: ScreenRecordRepositoryImpl): ScreenRecordRepository
 
+    @Binds
+    @IntoMap
+    @ClassKey(ScreenRecordingBlurController::class)
+    fun bindScreenRecordingBlurController(controller: ScreenRecordingBlurController): CoreStartable
+
     /** Inject ScreenRecordTile into tileMap in QSModule */
     @Binds
     @IntoMap
