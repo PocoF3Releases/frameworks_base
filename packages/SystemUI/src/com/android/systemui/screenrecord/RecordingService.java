@@ -89,6 +89,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
     private static final String EXTRA_LOW_QUALITY = "extra_lowQuality";
     private static final String EXTRA_LONGER_DURATION = "extra_longerDuration";
     private final static String EXTRA_HEVC = "extra_HEVC";
+    private static final String EXTRA_MAX_FPS = "extra_maxFps";
 
     protected static final String ACTION_START = "com.android.systemui.screenrecord.START";
     protected static final String ACTION_SHOW_START_NOTIF =
@@ -121,6 +122,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
     private boolean mLowQuality;
     private boolean mLongerDuration;
     private boolean mHEVC;
+    private boolean mMaxFps;
 
     @Inject
     public RecordingService(ScreenRecordUxController controller, @LongRunning Executor executor,
@@ -155,6 +157,14 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
             int audioSource, boolean showTaps,
             @Nullable MediaProjectionCaptureTarget captureTarget,
             boolean lowQuality, boolean longerDuration, boolean hevc) {
+        return getStartIntent(context, resultCode, audioSource, showTaps, captureTarget,
+                lowQuality, longerDuration, hevc, false);
+    }
+
+    public static Intent getStartIntent(Context context, int resultCode,
+            int audioSource, boolean showTaps,
+            @Nullable MediaProjectionCaptureTarget captureTarget,
+            boolean lowQuality, boolean longerDuration, boolean hevc, boolean maxFps) {
         return new Intent(context, RecordingService.class)
                 .setAction(ACTION_START)
                 .putExtra(EXTRA_RESULT_CODE, resultCode)
@@ -163,7 +173,8 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
                 .putExtra(EXTRA_CAPTURE_TARGET, captureTarget)
                 .putExtra(EXTRA_LOW_QUALITY, lowQuality)
                 .putExtra(EXTRA_LONGER_DURATION, longerDuration)
-                .putExtra(EXTRA_HEVC, hevc);
+                .putExtra(EXTRA_HEVC, hevc)
+                .putExtra(EXTRA_MAX_FPS, maxFps);
     }
 
     /**
@@ -189,8 +200,23 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
             boolean lowQuality,
             boolean longerDuration,
             boolean hevc) {
+        return getStartIntent(context, resultCode, audioSource, showTaps, displayId, captureTarget,
+                lowQuality, longerDuration, hevc, false);
+    }
+
+    public static Intent getStartIntent(
+            Context context,
+            int resultCode,
+            int audioSource,
+            boolean showTaps,
+            int displayId,
+            @Nullable MediaProjectionCaptureTarget captureTarget,
+            boolean lowQuality,
+            boolean longerDuration,
+            boolean hevc,
+            boolean maxFps) {
         return getStartIntent(context, resultCode, audioSource, showTaps, captureTarget, lowQuality,
-            longerDuration, hevc)
+                longerDuration, hevc, maxFps)
                 .putExtra(EXTRA_DISPLAY_ID, displayId);
     }
 
@@ -222,6 +248,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
                 mLowQuality = intent.getBooleanExtra(EXTRA_LOW_QUALITY, false);
                 mLongerDuration = intent.getBooleanExtra(EXTRA_LONGER_DURATION, false);
                 mHEVC = intent.getBooleanExtra(EXTRA_HEVC, true);
+                mMaxFps = intent.getBooleanExtra(EXTRA_MAX_FPS, false);
 
                 MediaProjectionCaptureTarget captureTarget =
                         intent.getParcelableExtra(EXTRA_CAPTURE_TARGET,
@@ -246,6 +273,7 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
                 setLowQuality(mLowQuality);
                 setLongerDuration(mLongerDuration);
                 setHEVC(mHEVC);
+                setMaximumFrameRate(mMaxFps);
 
                 if (startRecording()) {
                     updateState(true);
@@ -613,6 +641,12 @@ public class RecordingService extends Service implements ScreenMediaRecorderList
     private void setHEVC(boolean hevc) {
         if (getRecorder() != null) {
             getRecorder().setHEVC(hevc);
+        }
+    }
+
+    private void setMaximumFrameRate(boolean maxFps) {
+        if (getRecorder() != null) {
+            getRecorder().setUseMaximumFrameRate(maxFps);
         }
     }
 
