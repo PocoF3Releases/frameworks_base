@@ -22,12 +22,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -37,7 +34,6 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -54,21 +50,50 @@ import com.android.systemui.res.R
 @Composable
 internal fun ClipboardExpanded(event: IslandEvent.Clipboard, interactor: IslandActions) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(SpaceLg)) {
+        // The header used to be its own tinted panel inside the card — a second surface nested in
+        // the one the card already draws. It is now a plain row, with the actions inline.
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(ShapeLg)
-                .background(IndigoAccent.copy(alpha = AlphaFaint))
-                .padding(SpaceXxl),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(SpaceMd),
         ) {
-            Icon(Icons.Filled.ContentCopy, null, tint = IndigoAccent, modifier = Modifier.size(22.dp))
-            Spacer(Modifier.width(SpaceLg))
+            Box(
+                modifier = Modifier.size(SizeIconBadge).clip(ShapeCompact)
+                    .background(IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Filled.ContentCopy, null, tint = IslandTone.ACCENT.tint, modifier = Modifier.size(16.dp))
+            }
             Text(
                 stringResource(if (event.isImage) R.string.ax_dynamic_bar_image_copied else R.string.ax_dynamic_bar_copied),
                 color = OnCardText,
                 style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
             )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpaceSm),
+            ) {
+                if (event.items.isNotEmpty()) {
+                    ActionIconButton(
+                        icon = Icons.Filled.DeleteSweep,
+                        tint = IslandTone.ACCENT.tint,
+                        bg = IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg),
+                        contentDescription = stringResource(R.string.ax_dynamic_bar_clear_all),
+                        onClick = {
+                            event.items.forEach { interactor.removeClipboardItem(it.id) }
+                            interactor.dismissEvent(event)
+                        },
+                    )
+                }
+                ActionIconButton(
+                    icon = Icons.Filled.Close,
+                    tint = IslandTone.ACCENT.tint,
+                    bg = IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg),
+                    contentDescription = stringResource(R.string.ax_dynamic_bar_dismiss),
+                    onClick = { interactor.dismissEvent(event) },
+                )
+            }
         }
 
         if (event.items.isNotEmpty()) {
@@ -79,33 +104,6 @@ internal fun ClipboardExpanded(event: IslandEvent.Clipboard, interactor: IslandA
             }
         } else {
             ClipboardSingleItem(event, interactor)
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(SpaceMd),
-        ) {
-            if (event.items.isNotEmpty()) {
-                ActionChip(
-                    label = stringResource(R.string.ax_dynamic_bar_clear_all),
-                    icon = Icons.Filled.DeleteSweep,
-                    color = IndigoAccent,
-                    bg = IndigoAccent.copy(alpha = AlphaIconBg),
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        event.items.forEach { interactor.removeClipboardItem(it.id) }
-                        interactor.dismissEvent(event)
-                    },
-                )
-            }
-            ActionChip(
-                label = stringResource(R.string.ax_dynamic_bar_dismiss),
-                icon = Icons.Filled.Close,
-                color = IndigoAccent,
-                bg = IndigoAccent.copy(alpha = AlphaIconBg),
-                modifier = Modifier.weight(1f),
-                onClick = { interactor.dismissEvent(event) },
-            )
         }
     }
 }
@@ -133,20 +131,20 @@ private fun ClipboardStashItem(
                 modifier = Modifier
                     .size(SizeCompactIcon)
                     .clip(ShapeCompact)
-                    .background(IndigoAccent.copy(alpha = AlphaIconBg)),
+                    .background(IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg)),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.Photo, null, tint = IndigoAccent, modifier = Modifier.size(18.dp))
+                Icon(Icons.Filled.Photo, null, tint = IslandTone.ACCENT.tint, modifier = Modifier.size(18.dp))
             }
         } else if (item.isUrl) {
             Box(
                 modifier = Modifier
                     .size(SizeCompactIcon)
                     .clip(ShapeCompact)
-                    .background(IndigoAccent.copy(alpha = AlphaIconBg)),
+                    .background(IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg)),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.Link, null, tint = IndigoAccent, modifier = Modifier.size(18.dp))
+                Icon(Icons.Filled.Link, null, tint = IslandTone.ACCENT.tint, modifier = Modifier.size(18.dp))
             }
         }
 
@@ -181,7 +179,7 @@ private fun ClipboardStashItem(
         Icon(
             Icons.Filled.ContentCopy,
             null,
-            tint = IndigoAccent,
+            tint = IslandTone.ACCENT.tint,
             modifier = Modifier
                 .size(SizeIconSm)
                 .clickable {
@@ -213,10 +211,10 @@ private fun ClipboardSingleItem(event: IslandEvent.Clipboard, interactor: Island
                     modifier = Modifier
                         .size(SizeCompactIcon)
                         .clip(ShapeCompact)
-                        .background(IndigoAccent.copy(alpha = AlphaIconBg)),
+                        .background(IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Filled.Link, null, tint = IndigoAccent, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.Link, null, tint = IslandTone.ACCENT.tint, modifier = Modifier.size(18.dp))
                 }
             }
             Text(
@@ -230,7 +228,7 @@ private fun ClipboardSingleItem(event: IslandEvent.Clipboard, interactor: Island
             Icon(
                 Icons.Filled.ContentCopy,
                 null,
-                tint = IndigoAccent,
+                tint = IslandTone.ACCENT.tint,
                 modifier = Modifier
                     .size(SizeIconSm)
                     .wrapContentWidth()
@@ -246,49 +244,14 @@ private fun ClipboardSingleItem(event: IslandEvent.Clipboard, interactor: Island
         ActionChip(
             label = stringResource(R.string.ax_dynamic_bar_open),
             icon = Icons.Filled.Link,
-            color = IndigoAccent,
-            bg = IndigoAccent.copy(alpha = AlphaIconBg),
+            color = IslandTone.ACCENT.tint,
+            bg = IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg),
             modifier = Modifier.fillMaxWidth(),
+            compact = true,
             onClick = {
                 interactor.openUrl(event.preview)
                 interactor.collapseIsland()
             },
-        )
-    }
-}
-
-@Composable
-internal fun RowScope.CompactClipboardRow(
-    event: IslandEvent.Clipboard,
-    interactor: IslandActions,
-) {
-    Box(
-        modifier =
-            Modifier.size(SizeCompactIcon).clip(ShapeCompact).background(BlueAccent.copy(alpha = AlphaIconBg)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(Icons.Filled.ContentCopy, null, tint = BlueAccent, modifier = Modifier.size(18.dp))
-    }
-    Spacer(Modifier.width(SpaceLg))
-    Text(
-        event.preview.ifEmpty { stringResource(if (event.isImage) R.string.ax_dynamic_bar_image_copied else R.string.ax_dynamic_bar_copied) },
-        color = OnCardText,
-        style = MaterialTheme.typography.bodySmall,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.weight(1f),
-    )
-    Spacer(Modifier.width(SpaceMd))
-    Surface(
-        onClick = { interactor.dismissEvent(event) },
-        shape = ShapeChip,
-        color = IndigoAccent.copy(alpha = AlphaIconBg),
-    ) {
-        Text(
-            stringResource(R.string.ax_dynamic_bar_dismiss),
-            color = IndigoAccent,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(horizontal = SpaceLg, vertical = SpaceSm),
         )
     }
 }

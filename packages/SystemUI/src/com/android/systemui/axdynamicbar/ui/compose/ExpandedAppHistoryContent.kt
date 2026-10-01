@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
@@ -28,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -43,25 +40,38 @@ import com.android.systemui.res.R
 internal fun AppHistoryExpanded(event: IslandEvent.AppSwitch, interactor: IslandActions) {
     if (event.recentApps.isEmpty()) return
 
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(SpaceXxl)) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(SpaceLg)) {
+        // Plain header row rather than a tinted panel nested inside the card.
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(ShapeLg)
-                .background(BlueAccent.copy(alpha = AlphaFaint))
-                .padding(SpaceXxl),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(SpaceMd),
         ) {
-            Text(stringResource(R.string.ax_dynamic_bar_recent_apps), color = OnCardText, style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.ax_dynamic_bar_count_running, event.recentApps.size), color = SubtleGray, style = MaterialTheme.typography.labelMedium)
+            Box(
+                modifier = Modifier.size(SizeIconBadge).clip(ShapeCompact)
+                    .background(IslandTone.ACCENT.tint.copy(alpha = AlphaIconBg)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Filled.Apps, null, tint = IslandTone.ACCENT.tint, modifier = Modifier.size(16.dp))
+            }
+            Text(
+                stringResource(R.string.ax_dynamic_bar_recent_apps),
+                color = OnCardText,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                stringResource(R.string.ax_dynamic_bar_count_running, event.recentApps.size),
+                color = SubtleGray,
+                style = MaterialTheme.typography.labelSmall,
+            )
         }
 
         val rows = event.recentApps.chunked(4)
         rows.forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(SpaceLg),
+                horizontalArrangement = Arrangement.spacedBy(SpaceSm),
             ) {
                 row.forEach { app ->
                     AppGridItem(
@@ -97,24 +107,24 @@ private fun AppGridItem(
                     .fillMaxWidth()
                     .clip(ShapeLg)
                     .clickable(onClick = onClick)
-                    .background(BlueAccent.copy(alpha = AlphaFaint), ShapeLg),
+                    .background(IslandTone.ACCENT.tint.copy(alpha = AlphaFaint), ShapeLg)
+                    .padding(vertical = SpaceMd, horizontal = SpaceXs),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(SpaceMd),
+            verticalArrangement = Arrangement.spacedBy(SpaceXs),
         ) {
-            Spacer(Modifier.size(SpaceMd))
             app.appIcon?.let { icon ->
                 Image(
-                    bitmap = icon.toScaledBitmap(48.dp),
+                    bitmap = icon.toScaledBitmap(40.dp),
                     contentDescription = app.appName,
-                    modifier = Modifier.size(48.dp).clip(ShapeIconLarge),
+                    modifier = Modifier.size(40.dp).clip(ShapeCompact),
                     contentScale = ContentScale.Crop,
                 )
             }
                 ?: Box(
-                    modifier = Modifier.size(48.dp).clip(ShapeIconLarge).background(CardBg),
+                    modifier = Modifier.size(40.dp).clip(ShapeCompact).background(CardBg),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Filled.Apps, null, tint = SubtleGray, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Filled.Apps, null, tint = SubtleGray, modifier = Modifier.size(20.dp))
                 }
 
             Text(
@@ -122,26 +132,22 @@ private fun AppGridItem(
                 color = SubtleGray,
                 style = MaterialTheme.typography.labelSmall,
                 textAlign = TextAlign.Center,
-                minLines = 2,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SpaceXs),
+                modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(Modifier.size(SpaceXs))
         }
 
         Surface(
             onClick = onKill,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .offset(x = 4.dp, y = (-4).dp)
-                .size(22.dp),
+                .offset(x = 2.dp, y = (-2).dp)
+                .size(20.dp),
             shape = CircleShape,
-            color = RedAccent,
-            contentColor = Color.White,
-            border = BorderStroke(1.5.dp, Color.White.copy(alpha = 0.9f)),
+            color = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError,
+            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.onError.copy(alpha = 0.9f)),
             shadowElevation = 3.dp,
         ) {
             Box(
@@ -151,34 +157,10 @@ private fun AppGridItem(
                 Icon(
                     Icons.Filled.Close,
                     contentDescription = stringResource(R.string.ax_dynamic_bar_kill_app),
-                    tint = Color.White,
-                    modifier = Modifier.size(13.dp),
+                    tint = MaterialTheme.colorScheme.onError,
+                    modifier = Modifier.size(12.dp),
                 )
             }
         }
-    }
-}
-
-@Composable
-internal fun RowScope.CompactAppSwitchRow(event: IslandEvent.AppSwitch) {
-    val lastApp = event.recentApps.firstOrNull() ?: return
-    lastApp.appIcon?.let { icon ->
-        Image(
-            bitmap = icon.toScaledBitmap(SizeCompactIcon),
-            null,
-            modifier = Modifier.size(SizeCompactIcon).clip(ShapeCompact),
-            contentScale = ContentScale.Crop,
-        )
-    }
-        ?: Box(
-            modifier = Modifier.size(SizeCompactIcon).clip(ShapeCompact).background(CardBg),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Filled.Apps, null, tint = SubtleGray, modifier = Modifier.size(20.dp))
-        }
-    Spacer(Modifier.width(SpaceLg))
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SpaceXxs)) {
-        Text(stringResource(R.string.ax_dynamic_bar_recent_apps), color = OnCardText, style = MaterialTheme.typography.bodySmall)
-        Text(stringResource(R.string.ax_dynamic_bar_count_running, event.recentApps.size), color = SubtleGray, style = MaterialTheme.typography.labelSmall)
     }
 }

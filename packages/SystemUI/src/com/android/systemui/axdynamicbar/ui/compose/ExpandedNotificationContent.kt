@@ -19,8 +19,6 @@ package com.android.systemui.axdynamicbar.ui.compose
 import android.app.Notification
 import android.content.Context
 import android.service.notification.StatusBarNotification
-import android.util.Log
-import android.util.Size
 import android.widget.FrameLayout
 import android.widget.RemoteViews
 import androidx.compose.animation.AnimatedVisibility
@@ -35,13 +33,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
@@ -64,7 +58,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.android.systemui.axdynamicbar.model.IslandEvent
 import com.android.systemui.axdynamicbar.shared.IslandActions
@@ -77,7 +70,7 @@ internal fun NotificationExpanded(
     interactor: IslandActions,
 ) {
     val context = LocalContext.current
-    val accent = BlueAccent
+    val accent = IslandTone.ACCENT.tint
     val hasProgress = event.progress >= 0 || event.isProgressIndeterminate
     val hasCustomContent =
         event.sbn.isOngoing &&
@@ -90,17 +83,15 @@ internal fun NotificationExpanded(
             catch (_: Exception) {}
             interactor.collapseIsland()
         },
-        verticalArrangement = Arrangement.spacedBy(SpaceLg),
+        verticalArrangement = Arrangement.spacedBy(SpaceMd),
     ) {
+        // Plain row rather than a tinted panel nested inside the card the tile already draws.
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .clip(ShapeLg)
-                .background(accent.copy(alpha = AlphaFaint))
-                .padding(SpaceLg),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(SpaceLg),
+            horizontalArrangement = Arrangement.spacedBy(SpaceMd),
         ) {
-            NotifExpandedAvatar(event, SizeCompactIcon)
+            NotifExpandedAvatar(event, SizeIconBadge)
 
             Column(
                 modifier = Modifier.weight(1f),
@@ -124,11 +115,41 @@ internal fun NotificationExpanded(
                 )
             }
 
-            event.appIcon?.let {
-                Image(
-                    bitmap = it.toScaledBitmap(SizeIconSm),
-                    contentDescription = null,
-                    modifier = Modifier.size(SizeIconSm).clip(ShapeSm),
+            // The trailing app icon that used to sit here duplicated the avatar on the left; the
+            // actions take its place, so a one-line notification is a single row with its buttons.
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpaceSm),
+            ) {
+                event.actions
+                    .filter { a ->
+                        val l = a.label?.toString()?.lowercase() ?: ""
+                        l != "collapse" && l != "expand" && l != "minimize"
+                    }
+                    .take(2)
+                    .forEach { notifAction ->
+                        NotificationActionButton(
+                            action = notifAction.action,
+                            label = notifAction.label.toString(),
+                            tone = IslandTone.ACCENT,
+                        ) {
+                            interactor.onNotificationInteraction(event.id)
+                            try { notifAction.action.actionIntent?.sendWithBal(context) }
+                            catch (_: Exception) {}
+                            interactor.dismissEvent(event)
+                            interactor.collapseIsland()
+                        }
+                    }
+
+                ActionIconButton(
+                    icon = Icons.Filled.Close,
+                    tint = accent,
+                    bg = accent.copy(alpha = AlphaIconBg),
+                    contentDescription = stringResource(R.string.ax_dynamic_bar_dismiss),
+                    onClick = {
+                        interactor.onNotificationInteraction(event.id)
+                        interactor.dismissEvent(event)
+                    },
                 )
             }
         }
@@ -151,46 +172,6 @@ internal fun NotificationExpanded(
                 Text(it, color = SubtleGray, style = MaterialTheme.typography.bodySmall, maxLines = 4, overflow = TextOverflow.Ellipsis)
             }
         }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(SpaceMd),
-        ) {
-            ActionChip(
-                label = stringResource(R.string.ax_dynamic_bar_dismiss),
-                icon = Icons.Filled.Close,
-                color = accent,
-                bg = accent.copy(alpha = AlphaIconBg),
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    interactor.onNotificationInteraction(event.id)
-                    interactor.dismissEvent(event)
-                },
-            )
-
-            event.actions
-                .filter { a ->
-                    val l = a.label?.toString()?.lowercase() ?: ""
-                    l != "collapse" && l != "expand" && l != "minimize"
-                }
-                .take(2)
-                .forEach { notifAction ->
-                    ActionChip(
-                        label = notifAction.label.toString(),
-                        color = OnActionText,
-                        bg = ActionBg,
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            interactor.onNotificationInteraction(event.id)
-                            try { notifAction.action.actionIntent?.sendWithBal(context) }
-                            catch (_: Exception) {}
-                            interactor.dismissEvent(event)
-                            interactor.collapseIsland()
-                        },
-                    )
-                }
-        }
-
     }
 }
 
@@ -205,10 +186,10 @@ private fun NotifExpandedAvatar(event: IslandEvent.Notification, size: Dp) {
         )
     } else {
         Box(
-            modifier = Modifier.size(size).clip(ShapeIconMedium).background(BlueAccent.copy(alpha = AlphaSubtle)),
+            modifier = Modifier.size(size).clip(ShapeIconMedium).background(IslandTone.ACCENT.tint.copy(alpha = AlphaSubtle)),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Filled.Notifications, null, tint = BlueAccent, modifier = Modifier.size(SizeIconSm))
+            Icon(Icons.Filled.Notifications, null, tint = IslandTone.ACCENT.tint, modifier = Modifier.size(SizeIconSm))
         }
     }
 }
@@ -302,21 +283,21 @@ private fun NotificationProgressFallback(event: IslandEvent.Notification) {
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
             Text(stringResource(R.string.ax_dynamic_bar_progress), color = SubtleGray, style = MaterialTheme.typography.labelSmall)
             if (fraction != null) {
-                Text("${(fraction * 100).toInt()}%", color = BlueAccent, style = MaterialTheme.typography.bodySmall)
+                Text("${(fraction * 100).toInt()}%", color = IslandTone.ACCENT.tint, style = MaterialTheme.typography.bodySmall)
             }
         }
         if (fraction != null) {
             LinearWavyProgressIndicator(
                 progress = { fraction.coerceIn(0f, 1f) },
                 modifier = Modifier.fillMaxWidth(),
-                color = BlueAccent,
-                trackColor = BlueAccent.copy(alpha = AlphaSubtle),
+                color = IslandTone.ACCENT.tint,
+                trackColor = IslandTone.ACCENT.tint.copy(alpha = AlphaSubtle),
             )
         } else {
             LinearWavyProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                color = BlueAccent,
-                trackColor = BlueAccent.copy(alpha = AlphaSubtle),
+                color = IslandTone.ACCENT.tint,
+                trackColor = IslandTone.ACCENT.tint.copy(alpha = AlphaSubtle),
             )
         }
     }
@@ -331,7 +312,7 @@ internal fun NotificationGroupCard(
     interactor: IslandActions,
 ) {
     val first = notifications.first()
-    val accent = BlueAccent
+    val accent = IslandTone.ACCENT.tint
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -425,7 +406,7 @@ private fun GroupedNotificationRow(
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
-    val accent = BlueAccent
+    val accent = IslandTone.ACCENT.tint
     var childExpanded by remember { mutableStateOf(false) }
 
     MagneticSwipeToDismiss(onDismiss = onDismiss) {
@@ -526,46 +507,5 @@ private fun GroupedNotificationRow(
             }
 
         }
-    }
-}
-
-@Composable
-internal fun RowScope.CompactNotificationRow(event: IslandEvent.Notification) {
-    event.appIcon?.let {
-        Image(
-            bitmap = it.toScaledBitmap(SizeCompactIcon),
-            null,
-            modifier = Modifier.size(SizeCompactIcon).clip(ShapeCompact),
-        )
-    }
-        ?: Box(
-            modifier =
-                Modifier.size(SizeCompactIcon).clip(ShapeCompact).background(BlueAccent.copy(alpha = AlphaIconBg)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                Icons.Filled.Notifications,
-                null,
-                tint = BlueAccent,
-                modifier = Modifier.size(18.dp),
-            )
-        }
-    Spacer(Modifier.width(SpaceLg))
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SpaceXxs)) {
-        Text(
-            event.title ?: event.appName.ifEmpty { event.sbn.packageName.substringAfterLast('.') },
-            color = OnCardText,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        if (event.text != null)
-            Text(
-                event.text,
-                color = SubtleGray,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
     }
 }

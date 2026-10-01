@@ -19,53 +19,44 @@ package com.android.systemui.axdynamicbar.ui.compose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.android.systemui.axdynamicbar.model.IslandEvent
-import com.android.systemui.axdynamicbar.shared.ActionChip
-import com.android.systemui.axdynamicbar.shared.ExpandedCardLayout
 import com.android.systemui.axdynamicbar.shared.IslandActions
-import com.android.systemui.axdynamicbar.shared.MintAccent
-import com.android.systemui.axdynamicbar.shared.OnActionText
-import com.android.systemui.axdynamicbar.shared.OnCardSecondary
-import com.android.systemui.axdynamicbar.shared.OnCardText
-import com.android.systemui.axdynamicbar.shared.SpaceLg
-import com.android.systemui.axdynamicbar.shared.sendWithBal
-import com.android.systemui.axdynamicbar.shared.toSquareScaledBitmap
-import com.android.systemui.res.R
+import com.android.systemui.axdynamicbar.shared.*
 
 @Composable
 internal fun NowPlayingExpanded(event: IslandEvent.NowPlaying, interactor: IslandActions) {
     val context = LocalContext.current
+    val tone = IslandTone.ACCENT
+
     ExpandedCardLayout(
-        accentColor = MintAccent,
+        accentColor = tone.tint,
         icon = {
             event.albumArt?.let { art ->
                 Image(
-                    bitmap = art.toSquareScaledBitmap(40.dp),
+                    bitmap = art.toSquareScaledBitmap(SizeIconBadge),
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)),
+                    modifier = Modifier.size(SizeIconBadge).clip(ShapeXs),
                     contentScale = ContentScale.Crop,
                 )
             } ?: Icon(
                 Icons.Filled.MusicNote,
                 null,
-                tint = MintAccent,
-                modifier = Modifier.size(30.dp),
+                tint = tone.tint,
+                modifier = Modifier.size(16.dp),
             )
         },
         title = {
@@ -73,7 +64,7 @@ internal fun NowPlayingExpanded(event: IslandEvent.NowPlaying, interactor: Islan
                 event.songTitle,
                 color = OnCardText,
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             if (event.artist.isNotEmpty()) {
@@ -86,34 +77,26 @@ internal fun NowPlayingExpanded(event: IslandEvent.NowPlaying, interactor: Islan
                 )
             }
         },
+        // The "Now playing" trailing label is gone: the tile is already titled with the track, so
+        // the label said nothing the row did not. The actions take its place.
         trailing = {
-            Text(
-                stringResource(R.string.ax_dynamic_bar_now_playing),
-                color = MintAccent,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        },
-        actions = if (event.actions.isNotEmpty()) {
-            {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(SpaceLg),
-                ) {
-                    event.actions.forEach { notifAction ->
-                        ActionChip(
-                            label = notifAction.label.toString(),
-                            color = OnActionText,
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                try {
-                                    notifAction.action.actionIntent?.sendWithBal(context)
-                                } catch (_: Exception) {}
-                                interactor.collapseIsland()
-                            },
-                        )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SpaceSm),
+            ) {
+                event.actions.forEach { notifAction ->
+                    NotificationActionButton(
+                        action = notifAction.action,
+                        label = notifAction.label.toString(),
+                        tone = tone,
+                    ) {
+                        try {
+                            notifAction.action.actionIntent?.sendWithBal(context)
+                        } catch (_: Exception) {}
+                        interactor.collapseIsland()
                     }
                 }
             }
-        } else null,
+        },
     )
 }

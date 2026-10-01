@@ -17,16 +17,10 @@
 package com.android.systemui.axdynamicbar.ui.compose
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -40,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
@@ -49,7 +42,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.android.systemui.axdynamicbar.model.IslandEvent
 import com.android.systemui.axdynamicbar.shared.IslandActions
 import com.android.systemui.axdynamicbar.shared.*
@@ -80,80 +72,63 @@ internal fun TimerExpanded(event: IslandEvent.Timer, interactor: IslandActions) 
         }
     }
     val progress = if (event.endTimeMs > 0L) remainingMs.toFloat() / totalMs else 0f
+    val counting = event.endTimeMs > 0L && !event.isPaused
+    // Read here rather than inside the Canvas: the progress ring is drawn in a DrawScope lambda,
+    // which is not composable, so the role has to be resolved before we get there.
+    val accent = style.accent
 
     ExpandedCardLayout(
-        accentColor = style.accent,
+        accentColor = accent,
+        // The ring is its own affordance, so it is drawn bare rather than washed onto a badge —
+        // a circle inside a rounded square reads as neither.
+        iconBackground = false,
         icon = {
-            Box(modifier = Modifier.size(44.dp), contentAlignment = Alignment.Center) {
-                Canvas(Modifier.size(44.dp)) {
+            Box(modifier = Modifier.size(SizeIconBadge), contentAlignment = Alignment.Center) {
+                Canvas(Modifier.size(SizeIconBadge)) {
                     drawArc(
-                        color = style.accent.copy(alpha = AlphaSubtle),
+                        color = accent.copy(alpha = AlphaSubtle),
                         startAngle = -90f,
                         sweepAngle = 360f,
                         useCenter = false,
-                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round),
+                        style = Stroke(width = SizeStrokeWidth.toPx(), cap = StrokeCap.Round),
                         topLeft = Offset.Zero,
                         size = Size(size.width, size.height),
                     )
                     drawArc(
-                        color = style.accent,
+                        color = accent,
                         startAngle = -90f,
                         sweepAngle = 360f * progress.coerceIn(0f, 1f),
                         useCenter = false,
-                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round),
+                        style = Stroke(width = SizeStrokeWidth.toPx(), cap = StrokeCap.Round),
                         topLeft = Offset.Zero,
                         size = Size(size.width, size.height),
                     )
                 }
-                style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(22.dp)) }
+                style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(14.dp)) }
             }
         },
         title = {
-            Text(event.label.ifEmpty { stringResource(style.labelRes) }, color = SubtleGray, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (event.endTimeMs > 0L) {
-                Text(
-                    if (event.isPaused) stringResource(R.string.ax_dynamic_bar_paused) else formatCountdownLong(remainingMs),
-                    color = if (event.isPaused) SubtleGray else style.accent,
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-            } else {
-                Text(
-                    stringResource(if (event.isPaused) R.string.ax_dynamic_bar_paused else R.string.ax_dynamic_bar_running),
-                    color = if (event.isPaused) SubtleGray else style.accent,
-                    style = MaterialTheme.typography.titleSmall,
-                )
-            }
+            // The countdown is the row's headline; the timer's name drops to the caption beneath it.
+            // That inversion is what lets the value share a row with the icon and the actions.
+            Text(
+                when {
+                    event.isPaused -> stringResource(R.string.ax_dynamic_bar_paused)
+                    counting -> formatCountdownLong(remainingMs)
+                    else -> stringResource(R.string.ax_dynamic_bar_running)
+                },
+                color = if (event.isPaused) SubtleGray else style.accent,
+                style = if (counting) TsValue else MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+            )
+            Text(
+                event.label.ifEmpty { stringResource(style.labelRes) },
+                color = SubtleGray,
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         },
-        trailing = { if (event.isPaused) StatusChip(stringResource(R.string.ax_dynamic_bar_paused), SubtleGray) },
-        actions = {
-            if (event.actions.isNotEmpty()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(SpaceMd),
-                ) {
-                    event.actions.forEach { notifAction ->
-                        ActionChip(
-                            label = notifAction.label.toString(),
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                try {
-                                    notifAction.action.actionIntent?.sendWithBal(context)
-                                } catch (_: Exception) {}
-                            },
-                        )
-                    }
-                }
-            } else {
-                ActionChip(
-                    label = stringResource(R.string.ax_dynamic_bar_dismiss),
-                    icon = Icons.Filled.Close,
-                    color = style.accent,
-                    bg = style.accent.copy(alpha = AlphaIconBg),
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { interactor.dismissEvent(event) },
-                )
-            }
-        },
+        trailing = { TimerActions(event, interactor, style, context) },
     )
 }
 
@@ -177,136 +152,71 @@ internal fun StopwatchExpanded(event: IslandEvent.Stopwatch, interactor: IslandA
     ExpandedCardLayout(
         accentColor = style.accent,
         icon = {
-            if (event.isRunning) PulsingDot(color = style.accent, size = 22.dp)
-            else style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(22.dp)) }
+            if (event.isRunning) PulsingDot(color = style.accent, size = 14.dp)
+            else style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(14.dp)) }
         },
         title = {
-            Text(event.label.ifEmpty { stringResource(style.labelRes) }, color = SubtleGray, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
-                if (event.isRunning) formatStopwatch(elapsedMs) else stringResource(R.string.ax_dynamic_bar_paused),
+                if (event.isRunning) formatStopwatch(elapsedMs)
+                else stringResource(R.string.ax_dynamic_bar_paused),
                 color = if (event.isRunning) style.accent else SubtleGray,
-                style = MaterialTheme.typography.headlineMedium,
+                style = if (event.isRunning) TsValue else MaterialTheme.typography.titleSmall,
+                maxLines = 1,
             )
-        },
-        trailing = { if (!event.isRunning) StatusChip(stringResource(R.string.ax_dynamic_bar_paused), SubtleGray) },
-        actions = {
-            if (event.actions.isNotEmpty()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(SpaceMd),
-                ) {
-                    event.actions.forEach { notifAction ->
-                        ActionChip(
-                            label = notifAction.label.toString(),
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                try {
-                                    notifAction.action.actionIntent?.sendWithBal(context)
-                                } catch (_: Exception) {}
-                            },
-                        )
-                    }
-                }
-            } else {
-                ActionChip(
-                    label = stringResource(R.string.ax_dynamic_bar_dismiss),
-                    icon = Icons.Filled.Close,
-                    color = style.accent,
-                    bg = style.accent.copy(alpha = AlphaIconBg),
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { interactor.dismissEvent(event) },
-                )
-            }
-        },
-    )
-}
-
-@Composable
-internal fun RowScope.CompactTimerRow(event: IslandEvent.Timer) {
-    var remainingMs by
-        remember(event.endTimeMs) {
-            mutableLongStateOf(
-                if (event.endTimeMs > 0L)
-                    (event.endTimeMs - System.currentTimeMillis()).coerceAtLeast(0L)
-                else 0L
-            )
-        }
-    if (!event.isPaused) {
-        LaunchedEffect(event.endTimeMs) {
-            if (event.endTimeMs > 0L) {
-                while (remainingMs > 0L) {
-                    delay(500)
-                    remainingMs = (event.endTimeMs - System.currentTimeMillis()).coerceAtLeast(0L)
-                }
-            }
-        }
-    }
-    val style = eventStyleFor(event)
-    Box(
-        modifier =
-            Modifier.size(SizeCompactIcon).clip(ShapeCompact).background(style.accent.copy(alpha = AlphaIconBg)),
-        contentAlignment = Alignment.Center,
-    ) {
-        style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(18.dp)) }
-    }
-    Spacer(Modifier.width(SpaceLg))
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SpaceXxs)) {
-        if (event.label.isNotEmpty())
             Text(
-                event.label,
+                event.label.ifEmpty { stringResource(style.labelRes) },
                 color = SubtleGray,
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-        if (event.endTimeMs > 0L) {
-            Text(
-                if (event.isPaused) stringResource(R.string.ax_dynamic_bar_paused) else formatCountdownLong(remainingMs),
-                color = if (event.isPaused) SubtleGray else style.accent,
-                style = TsMono.copy(fontSize = 13.sp),
-            )
-        } else {
-            Text(stringResource(if (event.isPaused) R.string.ax_dynamic_bar_paused else R.string.ax_dynamic_bar_running), color = style.accent, style = MaterialTheme.typography.labelSmall)
-        }
-    }
+        },
+        trailing = { TimerActions(event, interactor, style, context) },
+    )
 }
 
+/**
+ * The tile's actions, inline in the header row instead of on a 48 dp band underneath it. Each
+ * forwarded notification action is drawn by [NotificationActionButton], which falls back to a
+ * labelled chip when the classifier cannot place it; with nothing to forward, the tile offers its
+ * own dismiss.
+ */
 @Composable
-internal fun RowScope.CompactStopwatchRow(event: IslandEvent.Stopwatch) {
-    var elapsedMs by
-        remember(event.startTimeMs) {
-            mutableLongStateOf((System.currentTimeMillis() - event.startTimeMs).coerceAtLeast(0L))
-        }
-    if (event.isRunning) {
-        LaunchedEffect(event.startTimeMs) {
-            while (true) {
-                delay(200)
-                elapsedMs = (System.currentTimeMillis() - event.startTimeMs).coerceAtLeast(0L)
-            }
-        }
+private fun TimerActions(
+    event: IslandEvent,
+    interactor: IslandActions,
+    style: EventStyle,
+    context: android.content.Context,
+) {
+    val actions = when (event) {
+        is IslandEvent.Timer -> event.actions
+        is IslandEvent.Stopwatch -> event.actions
+        else -> emptyList()
     }
-    val style = eventStyleFor(event)
-    Box(
-        modifier =
-            Modifier.size(SizeCompactIcon).clip(ShapeCompact).background(style.accent.copy(alpha = AlphaIconBg)),
-        contentAlignment = Alignment.Center,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SpaceSm),
     ) {
-        if (event.isRunning) PulsingDot(color = style.accent, size = 18.dp)
-        else style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(18.dp)) }
-    }
-    Spacer(Modifier.width(SpaceLg))
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(SpaceXxs)) {
-        Text(
-            event.label.ifEmpty { stringResource(style.labelRes) },
-            color = SubtleGray,
-            style = MaterialTheme.typography.labelSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            if (event.isRunning) formatStopwatch(elapsedMs) else stringResource(R.string.ax_dynamic_bar_paused),
-            color = if (event.isRunning) style.accent else SubtleGray,
-            style = TsMono.copy(fontSize = 13.sp),
-        )
+        if (actions.isNotEmpty()) {
+            actions.forEach { notifAction ->
+                NotificationActionButton(
+                    action = notifAction.action,
+                    label = notifAction.label.toString(),
+                    tone = style.tone,
+                ) {
+                    try {
+                        notifAction.action.actionIntent?.sendWithBal(context)
+                    } catch (_: Exception) {}
+                }
+            }
+        } else {
+            ActionIconButton(
+                icon = Icons.Filled.Close,
+                tint = style.accent,
+                bg = style.accent.copy(alpha = AlphaIconBg),
+                contentDescription = stringResource(R.string.ax_dynamic_bar_dismiss),
+                onClick = { interactor.dismissEvent(event) },
+            )
+        }
     }
 }

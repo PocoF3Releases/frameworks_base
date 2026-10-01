@@ -1,10 +1,6 @@
 package com.android.systemui.axdynamicbar.ui.compose
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.systemui.axdynamicbar.shared.IslandActions
@@ -65,7 +60,7 @@ internal fun TorchExpanded(
     val style = eventStyleFor(event)
     ExpandedCardLayout(
         accentColor = style.accent,
-        icon = { style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(28.dp)) } },
+        icon = { style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(16.dp)) } },
         title = {
             Text(stringResource(style.labelRes), color = OnCardText, style = MaterialTheme.typography.titleMedium)
             if (event.supportsLevel) {
@@ -76,13 +71,13 @@ internal fun TorchExpanded(
             }
         },
         trailing = {
-            CircleButton(
-                color = RedAccent.copy(alpha = AlphaSubtle),
-                size = SizeButton,
+            ActionIconButton(
+                icon = Icons.Filled.FlashlightOff,
+                tint = MaterialTheme.colorScheme.error,
+                bg = MaterialTheme.colorScheme.error.copy(alpha = AlphaSubtle),
+                contentDescription = stringResource(R.string.ax_dynamic_bar_dismiss),
                 onClick = { interactor.dismissEvent(event) },
-            ) {
-                Icon(Icons.Filled.FlashlightOff, null, tint = RedAccent, modifier = Modifier.size(22.dp))
-            }
+            )
         },
         actions = if (event.supportsLevel) {
             {
@@ -115,24 +110,3 @@ internal fun TorchExpanded(
         } else null,
     )
 }
-
-@Composable
-internal fun RowScope.CompactTorchRow(event: IslandEvent.Torch) {
-    val style = eventStyleFor(event)
-    style.icon?.let { Icon(it, null, tint = style.accent, modifier = Modifier.size(SpaceXxl)) }
-    Spacer(Modifier.width(SpaceSm))
-    Text(
-        stringResource(style.labelRes),
-        color = SubtleGray,
-        style = MaterialTheme.typography.labelSmall,
-        maxLines = 1,
-        modifier = Modifier.weight(1f),
-    )
-    if (event.supportsLevel) {
-        val pct = (event.level.toFloat() / event.maxLevel * 100).toInt()
-        Text("$pct%", color = style.accent, style = PillAccent)
-    } else {
-        Text(stringResource(R.string.ax_dynamic_bar_on), color = style.accent, style = PillAccent)
-    }
-}
-

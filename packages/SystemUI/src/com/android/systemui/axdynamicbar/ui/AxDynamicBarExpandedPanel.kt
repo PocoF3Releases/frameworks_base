@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.android.systemui.axdynamicbar.ui
 
 import android.content.Context
@@ -6,7 +8,7 @@ import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -15,10 +17,12 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -48,6 +52,7 @@ import com.android.compose.theme.PlatformTheme
 import com.android.systemui.shared.recents.utilities.Utilities
 import com.android.systemui.axdynamicbar.model.IslandEvent
 import com.android.systemui.axdynamicbar.ui.compose.ExpandedIslandContent
+import com.android.systemui.axdynamicbar.shared.LocalBlurAlpha
 import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.dagger.qualifiers.Main
@@ -265,87 +270,99 @@ private fun OverlayContent(viewModel: AxDynamicBarChipViewModel, statusBarHeight
     }
 
     val origin = TransformOrigin(0.5f, 0f)
+    // Hoisted so the specs can be read inside the non-composable transition lambdas below.
+    val motionScheme = MaterialTheme.motionScheme
 
-    AnimatedVisibility(
-        visibleState = expandedVisible,
-        enter = fadeIn(tween(250)) + scaleIn(
-            animationSpec = tween(350),
-            initialScale = 0.4f,
-            transformOrigin = origin,
-        ),
-        exit = fadeOut(tween(200)) + scaleOut(
-            animationSpec = tween(250),
-            targetScale = 0.4f,
-            transformOrigin = origin,
-        ),
-    ) {
-        
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .pointerInput(Unit) {
-                    val slop = viewConfiguration.touchSlop
-                    awaitEachGesture {
-                        
-                        var ev: PointerEvent
-                        do {
-                            ev = awaitPointerEvent(PointerEventPass.Final)
-                        } while (!ev.changes.any { it.changedToDownIgnoreConsumed() })
-                        
-                        val downChange =
-                            ev.changes.firstOrNull { it.changedToDownIgnoreConsumed() }
-                                ?: ev.changes.firstOrNull()
-                                ?: return@awaitEachGesture
+    val blurAlpha by animateFloatAsState(
+        targetValue = if (isExpanded) 1f else 0f,
+        animationSpec = motionScheme.fastEffectsSpec(),
+        label = "blur_fade",
+    )
+    CompositionLocalProvider(LocalBlurAlpha provides blurAlpha) {
+        AnimatedVisibility(
+            visibleState = expandedVisible,
+            enter = fadeIn(motionScheme.defaultEffectsSpec()) + scaleIn(
+                animationSpec = motionScheme.defaultSpatialSpec(),
+                initialScale = 0.4f,
+                transformOrigin = origin,
+            ),
+            exit = fadeOut(motionScheme.fastEffectsSpec()) + scaleOut(
+                animationSpec = motionScheme.fastSpatialSpec(),
+                targetScale = 0.4f,
+                transformOrigin = origin,
+            ),
+        ) {
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .pointerInput(Unit) {
+                        val slop = viewConfiguration.touchSlop
+                        awaitEachGesture {
+                            
+                            var ev: PointerEvent
+                            do {
+                                ev = awaitPointerEvent(PointerEventPass.Final)
+                            } while (!ev.changes.any { it.changedToDownIgnoreConsumed() })
+                            
+                            val downChange =
+                                ev.changes.firstOrNull { it.changedToDownIgnoreConsumed() }
+                                    ?: ev.changes.firstOrNull()
+                                    ?: return@awaitEachGesture
 
-                        val pointerId = downChange.id
-                        val downPos = downChange.position
-                        val downConsumed = downChange.isConsumed
-                        var hasExceededSlop = false
+                            val pointerId = downChange.id
+                            val downPos = downChange.position
+                            val downConsumed = downChange.isConsumed
+                            var hasExceededSlop = false
 
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Final)
-                            val change =
-                                event.changes.firstOrNull { it.id == pointerId }
-                                    ?: event.changes.firstOrNull()
-                                    ?: break
+                            while (true) {
+                                val event = awaitPointerEvent(PointerEventPass.Final)
+                                val change =
+                                    event.changes.firstOrNull { it.id == pointerId }
+                                        ?: event.changes.firstOrNull()
+                                        ?: break
 
-                            val dx = change.position.x - downPos.x
-                            val dy = change.position.y - downPos.y
-                            if (dx * dx + dy * dy > slop * slop) {
-                                hasExceededSlop = true
-                            }
-
-                            if (!change.pressed) {
-                                if (!downConsumed && !change.isConsumed && !hasExceededSlop) {
-                                    change.consume()
-                                    viewModel.statusBarExpansion.collapse()
+                                val dx = change.position.x - downPos.x
+                                val dy = change.position.y - downPos.y
+                                if (dx * dx + dy * dy > slop * slop) {
+                                    hasExceededSlop = true
                                 }
-                                break
+
+                                if (!change.pressed) {
+                                    if (!downConsumed && !change.isConsumed && !hasExceededSlop) {
+                                        change.consume()
+                                        viewModel.statusBarExpansion.collapse()
+                                    }
+                                    break
+                                }
                             }
                         }
                     }
-                }
-                .padding(top = topPad),
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            chipState?.let { state ->
-                val filtered = state.allEvents.filter { it !is IslandEvent.AospChip }
-                if (filtered.isEmpty()) return@let
-                Box(
-                    modifier =
-                        Modifier.clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = {}
-                        )
-                ) {                
-                   ExpandedIslandContent(
-                    events = filtered,
-                    interactor = viewModel.interactor,
-                    onCollapse = { viewModel.statusBarExpansion.collapse() },
-                    pinnedEventId = state.event.id,
-                    hapticsViewModelFactory = viewModel.interactor.sliderHapticsViewModelFactory,
-                  ) 
+                    .padding(top = topPad),
+                contentAlignment = Alignment.TopCenter,
+            ) {
+                chipState?.let { state ->
+                    val filtered = state.allEvents.filter { it !is IslandEvent.AospChip }
+                    if (filtered.isEmpty()) return@let
+                    Box(
+                        modifier =
+                            Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                // Tapping the bar itself minimises it, not just the space around it.
+                                // Without this the tap landed on an inert clickable and was swallowed,
+                                // so the second tap appeared to do nothing.
+                                onClick = { viewModel.statusBarExpansion.collapse() }
+                            )
+                    ) {
+                       ExpandedIslandContent(
+                        events = filtered,
+                        interactor = viewModel.interactor,
+                        onCollapse = { viewModel.statusBarExpansion.collapse() },
+                        pinnedEventId = state.event.id,
+                        hapticsViewModelFactory = viewModel.interactor.sliderHapticsViewModelFactory,
+                      ) 
+                    }
                 }
             }
         }

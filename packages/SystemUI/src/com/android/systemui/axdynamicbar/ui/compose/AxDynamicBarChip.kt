@@ -1,6 +1,9 @@
 package com.android.systemui.axdynamicbar.ui.compose
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -11,6 +14,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.Image
@@ -36,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,9 +70,12 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.res.stringResource
 import com.android.systemui.axdynamicbar.model.IslandEvent
+import com.android.systemui.axdynamicbar.shared.AlphaGlass
 import com.android.systemui.axdynamicbar.shared.AlphaIconBg
 import com.android.systemui.axdynamicbar.shared.AlphaSecondary
 import com.android.systemui.axdynamicbar.shared.AlphaTertiary
+import com.android.systemui.axdynamicbar.shared.AxBlurBackdrop
+import com.android.systemui.axdynamicbar.shared.ChipTier
 import com.android.systemui.axdynamicbar.shared.PillPrimary
 import com.android.systemui.axdynamicbar.shared.ShapeXl
 import com.android.systemui.axdynamicbar.shared.ShapeXs
@@ -79,9 +85,12 @@ import com.android.systemui.axdynamicbar.shared.SpaceSm
 import com.android.systemui.axdynamicbar.shared.SpaceXs
 import com.android.systemui.axdynamicbar.shared.TsBadge
 import com.android.systemui.axdynamicbar.shared.chipAccentColorFor
-import com.android.systemui.axdynamicbar.shared.chipContentColorOn
+import com.android.systemui.axdynamicbar.shared.chipContentColorFor
+import com.android.systemui.axdynamicbar.shared.chipCornerRadius
+import com.android.systemui.axdynamicbar.shared.chipHeight
 import com.android.systemui.axdynamicbar.shared.chipProgressFor
 import com.android.systemui.axdynamicbar.shared.textKeyFor
+import com.android.systemui.axdynamicbar.shared.tierFor
 import com.android.systemui.axdynamicbar.shared.toScaledBitmap
 import com.android.systemui.axdynamicbar.ui.AxDynamicBarChipViewModel
 import com.android.systemui.res.R
@@ -92,7 +101,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 
 private val ChipShape = ShapeXl
-private val ChipHeight = 24.dp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -119,6 +127,12 @@ fun AxDynamicBarChip(
     var currentExpandable by remember { mutableStateOf<SystemUiExpandable?>(null) }
 
     val motionScheme = MaterialTheme.motionScheme
+
+    val chipBlurAlpha by animateFloatAsState(
+        targetValue = if (state != null && (ignoreKeyguard || !isOnKeyguard)) 1f else 0f,
+        animationSpec = motionScheme.fastEffectsSpec(),
+        label = "chip_blur_fade",
+    )
 
     AnimatedVisibility(
         visible = state != null && (ignoreKeyguard || !isOnKeyguard),
@@ -224,20 +238,31 @@ fun AxDynamicBarChip(
                     },
                     label = "chip_event",
                 ) {
+                    val contentBlurAlpha by transition.animateFloat(
+                        transitionSpec = { motionScheme.fastEffectsSpec() },
+                        label = "chip_blur_content",
+                    ) { if (it == EnterExitState.Visible) 1f else 0f }
                     val event = displayEvent
                     val rawAccent = chipAccentColorFor(event)
                     val accent by animateColorAsState(rawAccent, MaterialTheme.motionScheme.fastEffectsSpec(), label = "accent")
                     val contentColor by animateColorAsState(
-                        chipContentColorOn(rawAccent), MaterialTheme.motionScheme.fastEffectsSpec(), label = "content",
+                        chipContentColorFor(event), MaterialTheme.motionScheme.fastEffectsSpec(), label = "content",
                     )
-                val useCircleStyle = chipStyle == 1 &&
-                        !isAlert &&
-                        event !is IslandEvent.AudioRecording &&
-                        event !is IslandEvent.Timer &&
-                        event !is IslandEvent.Stopwatch &&
-                        !(event is IslandEvent.Sports && event.team2Name.isNotEmpty())
+                // The circle is for passive status only. Anything the user is actively tracking
+                // needs the pill, because a ring cannot show a counter — and a live capture always
+                // takes the large squircle: an active recording is not a stylistic preference.
+                val tier = tierFor(event)
+                val useCircleStyle = tier == ChipTier.PASSIVE && chipStyle == 1 && !isAlert
 
                 val progress = chipProgressFor(event, includeMediaProgress = useCircleStyle)
+
+                // Animated rather than swapped, so a tier change interpolates instead of snapping.
+                val animatedHeight by animateDpAsState(
+                    tier.chipHeight, motionScheme.defaultSpatialSpec(), label = "chip_height",
+                )
+                val animatedCorner by animateDpAsState(
+                    tier.chipCornerRadius, motionScheme.defaultSpatialSpec(), label = "chip_corner",
+                )
 
                 if (useCircleStyle) {
                     Box(
@@ -257,145 +282,153 @@ fun AxDynamicBarChip(
                     modifier = Modifier.fillMaxHeight(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Row(
-                        modifier =
-                            Modifier.height(ChipHeight)
-                                .widthIn(max = 100.dp)
-                                .clip(ChipShape)
-                                .squishAnimation(toggleCount)
-                                .background(accent)
-                                .then(
-                                    if (progress != null) {
-                                        val trackColor = lerp(accent, contentColor, 0.2f)
-                                        val fillColor = lerp(accent, contentColor, 0.6f)
-                                        Modifier.drawWithContent {
-                                            drawContent()
-                                            val barH = 2.dp.toPx()
-                                            val y = size.height - barH
-                                            drawRect(
-                                                trackColor,
-                                                topLeft = Offset(0f, y),
-                                                size = Size(size.width, barH),
-                                            )
-                                            drawRect(
-                                                fillColor,
-                                                topLeft = Offset(0f, y),
-                                                size = Size(size.width * progress, barH),
-                                            )
-                                        }
-                                    } else Modifier
+                    Box(contentAlignment = Alignment.Center) {
+                        AxBlurBackdrop(
+                            cornerRadius = animatedCorner,
+                            fallbackColor = accent,
+                            alpha = chipBlurAlpha * contentBlurAlpha,
+                            modifier = Modifier.matchParentSize(),
+                        )
+                        Row(
+                            modifier =
+                                Modifier.height(animatedHeight)
+                                    .widthIn(max = 100.dp)
+                                    .clip(RoundedCornerShape(animatedCorner))
+                                    .squishAnimation(toggleCount)
+                                    .background(accent.copy(alpha = AlphaGlass))
+                                    .then(
+                                        if (progress != null) {
+                                            val trackColor = lerp(accent, contentColor, 0.2f)
+                                            val fillColor = lerp(accent, contentColor, 0.6f)
+                                            Modifier.drawWithContent {
+                                                drawContent()
+                                                val barH = 2.dp.toPx()
+                                                val y = size.height - barH
+                                                drawRect(
+                                                    trackColor,
+                                                    topLeft = Offset(0f, y),
+                                                    size = Size(size.width, barH),
+                                                )
+                                                drawRect(
+                                                    fillColor,
+                                                    topLeft = Offset(0f, y),
+                                                    size = Size(size.width * progress, barH),
+                                                )
+                                            }
+                                        } else Modifier
+                                    )
+                                    .padding(start = SpaceSm, end = SpaceMd),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            if (carrierName != null) {
+                                Text(
+                                    text = carrierName,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = contentColor.copy(alpha = AlphaSecondary),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.widthIn(max = 56.dp),
                                 )
-                                .padding(start = SpaceSm, end = SpaceMd),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (carrierName != null) {
-                            Text(
-                                text = carrierName,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = contentColor.copy(alpha = AlphaSecondary),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.widthIn(max = 56.dp),
-                            )
-                            Text(
-                                text = " · ",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = contentColor.copy(alpha = AlphaTertiary),
-                            )
-                        }
-                        if (isAlert && event is IslandEvent.Notification) {
-                            val notif = event
-                            AnimatedContent(
-                                targetState = notif.sbn.key,
-                                transitionSpec = {
-                                    (fadeIn(motionScheme.defaultEffectsSpec()) togetherWith fadeOut(motionScheme.fastEffectsSpec()))
-                                        .using(sizeTransform = null)
-                                },
-                                label = "alert_content",
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    notif.appIcon?.let { icon ->
-                                        Image(
-                                            bitmap = icon.toScaledBitmap(16.dp),
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier.size(16.dp)
-                                                    .clip(ShapeXs),
-                                            contentScale = ContentScale.Crop,
+                                Text(
+                                    text = " · ",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = contentColor.copy(alpha = AlphaTertiary),
+                                )
+                            }
+                            if (isAlert && event is IslandEvent.Notification) {
+                                val notif = event
+                                AnimatedContent(
+                                    targetState = notif.sbn.key,
+                                    transitionSpec = {
+                                        (fadeIn(motionScheme.defaultEffectsSpec()) togetherWith fadeOut(motionScheme.fastEffectsSpec()))
+                                            .using(sizeTransform = null)
+                                    },
+                                    label = "alert_content",
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        notif.appIcon?.let { icon ->
+                                            Image(
+                                                bitmap = icon.toScaledBitmap(16.dp),
+                                                contentDescription = null,
+                                                modifier =
+                                                    Modifier.size(16.dp)
+                                                        .clip(ShapeXs),
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                            Spacer(Modifier.width(SpaceXs))
+                                        }
+                                        Text(
+                                            text = notif.appName ?: "",
+                                            style = PillPrimary,
+                                            color = contentColor,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.widthIn(max = chipTextMaxWidth).basicMarquee(iterations = 1),
                                         )
-                                        Spacer(Modifier.width(SpaceXs))
                                     }
-                                    Text(
-                                        text = notif.appName ?: "",
-                                        style = PillPrimary,
-                                        color = contentColor,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.widthIn(max = chipTextMaxWidth).basicMarquee(iterations = 1),
+                                }
+                            } else if (event is IslandEvent.Sports && event.team2Name.isNotEmpty()) {
+                                val sport = event
+                                StatusBarSportsTeamBadge(sport.team1Name, sport.team1Icon, contentColor)
+                                Spacer(Modifier.width(SpaceXs))
+                                Text(
+                                    if (sport.score1.isNotEmpty()) "${sport.score1} - ${sport.score2}"
+                                        else stringResource(R.string.ax_dynamic_bar_sports_vs),
+                                    style = PillPrimary,
+                                    color = contentColor,
+                                    maxLines = 1,
+                                )
+                                Spacer(Modifier.width(SpaceXs))
+                                StatusBarSportsTeamBadge(sport.team2Name, sport.team2Icon, contentColor)
+                            } else {
+                                AnimatedContent(
+                                    targetState = chipIconKey(event),
+                                    transitionSpec = {
+                                        (fadeIn(motionScheme.defaultEffectsSpec()) togetherWith
+                                            fadeOut(motionScheme.fastEffectsSpec()))
+                                            .using(sizeTransform = null)
+                                    },
+                                    label = "chip_icon",
+                                ) {
+                                    PillEventIcon(event, tint = contentColor, animated = false)
+                                }
+                                Spacer(Modifier.width(SpaceXs))
+                                AnimatedContent(
+                                    targetState = textKeyFor(event),
+                                    transitionSpec = {
+                                        (fadeIn(motionScheme.defaultEffectsSpec()) togetherWith
+                                            fadeOut(motionScheme.fastEffectsSpec()))
+                                            .using(sizeTransform = null)
+                                    },
+                                    label = "chip_text",
+                                    modifier = Modifier.weight(1f, fill = false).widthIn(max = chipTextMaxWidth),
+                                ) {
+                                    PillEventText(
+                                        event,
+                                        Modifier.widthIn(max = chipTextMaxWidth),
+                                        overrideColor = contentColor,
                                     )
                                 }
-                            }
-                        } else if (event is IslandEvent.Sports && event.team2Name.isNotEmpty()) {
-                            val sport = event
-                            StatusBarSportsTeamBadge(sport.team1Name, sport.team1Icon, contentColor)
-                            Spacer(Modifier.width(SpaceXs))
-                            Text(
-                                if (sport.score1.isNotEmpty()) "${sport.score1} - ${sport.score2}"
-                                    else stringResource(R.string.ax_dynamic_bar_sports_vs),
-                                style = PillPrimary,
-                                color = contentColor,
-                                maxLines = 1,
-                            )
-                            Spacer(Modifier.width(SpaceXs))
-                            StatusBarSportsTeamBadge(sport.team2Name, sport.team2Icon, contentColor)
-                        } else {
-                            AnimatedContent(
-                                targetState = chipIconKey(event),
-                                transitionSpec = {
-                                    (fadeIn(motionScheme.defaultEffectsSpec()) togetherWith
-                                        fadeOut(motionScheme.fastEffectsSpec()))
-                                        .using(sizeTransform = null)
-                                },
-                                label = "chip_icon",
-                            ) {
-                                PillEventIcon(event, tint = contentColor, animated = false)
-                            }
-                            Spacer(Modifier.width(SpaceXs))
-                            AnimatedContent(
-                                targetState = textKeyFor(event),
-                                transitionSpec = {
-                                    (fadeIn(motionScheme.defaultEffectsSpec()) togetherWith
-                                        fadeOut(motionScheme.fastEffectsSpec()))
-                                        .using(sizeTransform = null)
-                                },
-                                label = "chip_text",
-                                modifier = Modifier.weight(1f, fill = false).widthIn(max = chipTextMaxWidth),
-                            ) {
-                                PillEventText(
-                                    event,
-                                    Modifier.widthIn(max = chipTextMaxWidth),
-                                    overrideColor = contentColor,
-                                )
-                            }
-                            if (chipState.eventCount > 1) {
-                                Spacer(Modifier.width(SpaceXs))
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier
-                                        .height(SizeBadge)
-                                        .widthIn(min = SizeBadge)
-                                        .background(
-                                            lerp(accent, contentColor, 0.3f),
-                                            RoundedCornerShape(SizeBadge / 2),
+                                if (chipState.eventCount > 1) {
+                                    Spacer(Modifier.width(SpaceXs))
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .height(SizeBadge)
+                                            .widthIn(min = SizeBadge)
+                                            .background(
+                                                lerp(accent, contentColor, 0.3f),
+                                                RoundedCornerShape(SizeBadge / 2),
+                                            )
+                                            .padding(horizontal = 3.dp),
+                                    ) {
+                                        Text(
+                                            text = "${chipState.eventCount}",
+                                            style = TsBadge,
+                                            color = contentColor,
+                                            maxLines = 1,
                                         )
-                                        .padding(horizontal = 3.dp),
-                                ) {
-                                    Text(
-                                        text = "${chipState.eventCount}",
-                                        style = TsBadge,
-                                        color = contentColor,
-                                        maxLines = 1,
-                                    )
+                                    }
                                 }
                             }
                         }

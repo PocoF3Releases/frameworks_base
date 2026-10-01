@@ -4,17 +4,12 @@ package com.android.systemui.axdynamicbar.ui.compose
 
 import com.android.systemui.statusbar.chips.ui.model.OngoingActivityChipModel
 import com.android.systemui.statusbar.chips.ui.model.Chronometer
-import android.graphics.Canvas
-import android.graphics.drawable.GradientDrawable
-import android.view.View
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.viewinterop.AndroidView
-import com.android.axion.blur.AxBlurBackgroundRenderer
 import com.android.axion.blur.AxBlurColors
 import com.android.compose.animation.Expandable
 import com.android.compose.animation.rememberExpandableController
 import com.android.systemui.animation.Expandable as SystemUiExpandable
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateColorAsState
@@ -44,7 +39,6 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
@@ -70,6 +64,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -83,7 +78,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -108,10 +102,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.android.systemui.axdynamicbar.model.IslandEvent
 import com.android.systemui.axdynamicbar.model.RecordingState
 import com.android.systemui.axdynamicbar.shared.*
@@ -137,42 +129,13 @@ private val ActionIconSize = SizeBadge
 private val BatteryIconSize = ChipHeight - SpaceXxl
 private val CountBadgeHeight = ChipHeight / 2
 
-private class MusicPillBlurHost(context: Context) : View(context) {
-    private val blur = AxBlurBackgroundRenderer(this)
-    private val overlayColor = AxBlurColors.surfaceLightTint(context)
+private val ChipBlurCorner = 50.dp
 
-    private val bgDrawable: GradientDrawable = GradientDrawable().also { d ->
-        d.setColor(0x00000000)
-        d.cornerRadius = context.resources.displayMetrics.density * 50f
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        blur.onAttachedToWindow()
-    }
-
-    override fun onDetachedFromWindow() {
-        blur.onDetachedFromWindow()
-        super.onDetachedFromWindow()
-    }
-
-    override fun onVisibilityAggregated(isVisible: Boolean) {
-        super.onVisibilityAggregated(isVisible)
-        blur.onVisibilityAggregated(isVisible)
-    }
-
-    override fun verifyDrawable(who: Drawable): Boolean =
-        blur.verifyDrawable(who) || super.verifyDrawable(who)
-
-    override fun draw(canvas: Canvas) {
-        if (width > 0 && height > 0) {
-            bgDrawable.setBounds(0, 0, width, height)
-            if (!blur.drawBackgroundWithOverlayColor(canvas, bgDrawable, overlayColor)) {
-                bgDrawable.setColor(overlayColor and 0x00FFFFFF or (0xCC shl 24))
-                bgDrawable.draw(canvas)
-                bgDrawable.setColor(0x00000000)
-            }
-        }
+@Composable
+private fun chipBlurFallback(): Color {
+    val context = LocalContext.current
+    return remember(context) {
+        Color((AxBlurColors.surfaceLightTint(context) and 0x00FFFFFF) or (0xCC shl 24))
     }
 }
 
@@ -211,22 +174,29 @@ fun AxDynamicBarKeyguardChip(
                 viewModel.keyguardExpansion.notifyCollapseSettled()
             }
         }
-        AnimatedVisibility(
-            visibleState = expandedVisibleState,
-            enter = fadeIn(motionScheme.defaultEffectsSpec()),
-            exit = fadeOut(tween(durationMillis = 250)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center),
-        ) {
-            state?.let {
-                KeyguardExpandedContent(
-                    event = it.event,
-                    allEvents = it.allEvents,
-                    interactor = viewModel.interactor,
-                    onCollapse = { viewModel.keyguardExpansion.collapse() },
-                    hapticsViewModelFactory = viewModel.interactor.sliderHapticsViewModelFactory,
-                )
+        val panelBlurAlpha by animateFloatAsState(
+            targetValue = if (isKeyguardExpanded && state != null) 1f else 0f,
+            animationSpec = motionScheme.fastEffectsSpec(),
+            label = "keyguard_blur_fade",
+        )
+        CompositionLocalProvider(LocalBlurAlpha provides panelBlurAlpha) {
+            AnimatedVisibility(
+                visibleState = expandedVisibleState,
+                enter = fadeIn(motionScheme.defaultEffectsSpec()),
+                exit = fadeOut(motionScheme.defaultEffectsSpec()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+            ) {
+                state?.let {
+                    KeyguardExpandedContent(
+                        event = it.event,
+                        allEvents = it.allEvents,
+                        interactor = viewModel.interactor,
+                        onCollapse = { viewModel.keyguardExpansion.collapse() },
+                        hapticsViewModelFactory = viewModel.interactor.sliderHapticsViewModelFactory,
+                    )
+                }
             }
         }
 
@@ -269,6 +239,16 @@ fun AxDynamicBarKeyguardChip(
                     }
                 },
         ) {
+            val chipBlurAlpha by transition.animateFloat(
+                transitionSpec = {
+                    if (targetState == EnterExitState.Visible) {
+                        tween(durationMillis = 200, delayMillis = 300)
+                    } else {
+                        motionScheme.fastEffectsSpec<Float>()
+                    }
+                },
+                label = "kg_chip_blur_fade",
+            ) { if (it == EnterExitState.Visible) 1f else 0f }
             val chipState = state
             if (chipState != null) {
                 val rawEvent = chipState.event
@@ -287,6 +267,7 @@ fun AxDynamicBarKeyguardChip(
                         keyguardBatteryChipMode,
                         batteryString,
                         modifier,
+                        blurAlpha = chipBlurAlpha,
                     )
                     return@AnimatedVisibility
                 }
@@ -305,24 +286,30 @@ fun AxDynamicBarKeyguardChip(
                     contentKey = { it::class.simpleName },
                     label = "keyguard_chip_event",
                 ) { event ->
+                    val contentBlurAlpha by transition.animateFloat(
+                        transitionSpec = { motionScheme.fastEffectsSpec() },
+                        label = "kg_chip_blur_content",
+                    ) { if (it == EnterExitState.Visible) 1f else 0f }
                     val rawAccent = chipAccentColorFor(event)
                     val accent by animateColorAsState(
                         rawAccent,
                         MaterialTheme.motionScheme.fastEffectsSpec(),
                         label = "kg_accent",
                     )
-                    val isDark = isSystemInDarkTheme()
                     val contentColor by animateColorAsState(
-                        if (isDark) Color.White else Color.Black,
+                        chipContentColorFor(event),
                         MaterialTheme.motionScheme.fastEffectsSpec(),
                         label = "kg_content",
                     )
                     val rawProgress = chipProgressFor(event)
                     val progressTarget = rawProgress ?: 0f
                     val progressAnim = remember { Animatable(progressTarget) }
+                    // A progress crossfade is an effects change, not movement. Typed explicitly
+                    // because the spec is built outside the call that would otherwise infer it.
+                    val progressSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
                     LaunchedEffect(progressTarget) {
                         if (abs(progressTarget - progressAnim.value) > 0.05f) {
-                            progressAnim.animateTo(progressTarget, tween(300, easing = FastOutSlowInEasing))
+                            progressAnim.animateTo(progressTarget, progressSpec)
                         } else {
                             progressAnim.snapTo(progressTarget)
                         }
@@ -343,6 +330,7 @@ fun AxDynamicBarKeyguardChip(
                             viewModel = viewModel,
                             batteryString = batteryString,
                             aospChipExpandable = expandable,
+                            blurAlpha = chipBlurAlpha * contentBlurAlpha,
                         )
                     }
                 }
@@ -352,6 +340,7 @@ fun AxDynamicBarKeyguardChip(
                     keyguardBatteryChipMode,
                     batteryString,
                     modifier,
+                    blurAlpha = chipBlurAlpha,
                 )
             }
         }
@@ -368,6 +357,7 @@ private fun KeyguardChipBody(
     viewModel: AxDynamicBarChipViewModel,
     batteryString: String = "",
     aospChipExpandable: SystemUiExpandable,
+    blurAlpha: Float,
 ) {
     val context = LocalContext.current
     val motionScheme = MaterialTheme.motionScheme
@@ -387,8 +377,10 @@ private fun KeyguardChipBody(
             modifier = Modifier
                 .matchParentSize(),
         ) {
-            AndroidView(
-                factory = { ctx -> MusicPillBlurHost(ctx) },
+            AxBlurBackdrop(
+                cornerRadius = ChipBlurCorner,
+                fallbackColor = chipBlurFallback(),
+                alpha = blurAlpha,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(ChipShape),
@@ -484,7 +476,7 @@ private fun KeyguardChipBody(
                     ) {
                         Text(
                             ev.track.ifEmpty { stringResource(R.string.ax_dynamic_bar_music) },
-                            style = PillPrimary.copy(fontSize = 13.sp),
+                            style = PillTitle,
                             color = contentColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -494,7 +486,7 @@ private fun KeyguardChipBody(
                         if (ev.artist.isNotBlank()) {
                             Text(
                                 ev.artist,
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
+                                style = MaterialTheme.typography.labelMediumEmphasized,
                                 color = contentColor.copy(alpha = AlphaSecondary),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -633,6 +625,7 @@ private fun KeyguardBatteryChip(
     keyguardBatteryChipMode: Int,
     batteryString: String,
     modifier: Modifier,
+    blurAlpha: Float,
 ) {
     if (keyguardBatteryChipMode <= 0) return
 
@@ -643,7 +636,11 @@ private fun KeyguardBatteryChip(
         info.isPowerSave -> BatteryPowerSaveColor
         else -> BatteryNeutralColor
     }
-    val contentColor = chipContentColorOn(accent)
+    val contentColor = when {
+        info.isCharging -> MaterialTheme.colorScheme.onPrimary
+        info.isPowerSave -> MaterialTheme.colorScheme.onTertiary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     val parts = rememberChargingParts(batteryString)
     val isMultiLine = info.isCharging && parts.size >= 2
@@ -655,8 +652,10 @@ private fun KeyguardBatteryChip(
                 .matchParentSize()
                 .clip(ChipShape),
         ) {
-            AndroidView(
-                factory = { ctx -> MusicPillBlurHost(ctx) },
+            AxBlurBackdrop(
+                cornerRadius = ChipBlurCorner,
+                fallbackColor = chipBlurFallback(),
+                alpha = blurAlpha,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -693,7 +692,7 @@ private fun KeyguardBatteryChip(
                         )
                         Text(
                             parts[1],
-                            style = PillPrimary.copy(fontSize = 10.sp),
+                            style = TsCaption,
                             color = contentColor.copy(alpha = AlphaSecondary),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -894,7 +893,7 @@ private fun KeyguardPrimaryText(event: IslandEvent, color: Color, modifier: Modi
                     )
                     Text(
                         parts[1],
-                        style = PillPrimary.copy(fontSize = 10.sp),
+                        style = TsCaption,
                         color = color.copy(alpha = AlphaSecondary),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -1198,10 +1197,8 @@ private fun ActionButton(
 }
 
 @Composable
-private fun chipStrokeColor(): Color {
-    val base = if (isSystemInDarkTheme()) Color.White else Color.Black
-    return base.copy(alpha = 0.3f)
-}
+private fun chipStrokeColor(): Color =
+    MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
 
 @Composable
 private fun MarqueeText(text: String, color: Color, modifier: Modifier) {

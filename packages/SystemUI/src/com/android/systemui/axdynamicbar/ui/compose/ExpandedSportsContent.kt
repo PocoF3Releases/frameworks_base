@@ -16,15 +16,12 @@
 
 package com.android.systemui.axdynamicbar.ui.compose
 
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -58,7 +55,7 @@ internal fun SportsExpanded(event: IslandEvent.Sports, interactor: IslandActions
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(SpaceLg),
+        verticalArrangement = Arrangement.spacedBy(SpaceMd),
     ) {
         if (event.league.isNotEmpty()) {
             Text(
@@ -78,25 +75,25 @@ internal fun SportsExpanded(event: IslandEvent.Sports, interactor: IslandActions
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TeamColumn(event.team1Name, event.team1Icon?.toScaledBitmap(48.dp))
+                TeamColumn(event.team1Name, event.team1Icon?.toScaledBitmap(TeamCrestSize))
                 if (event.score1.isNotEmpty()) {
                     ScoreDisplay(event.score1, event.score2, accent)
                 } else {
                     Text(
                         stringResource(R.string.ax_dynamic_bar_sports_vs),
                         color = SubtleGray,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Light,
                     )
                 }
-                TeamColumn(event.team2Name, event.team2Icon?.toScaledBitmap(48.dp))
+                TeamColumn(event.team2Name, event.team2Icon?.toScaledBitmap(TeamCrestSize))
             }
         } else {
             Text(
                 event.team1Name,
                 color = OnCardText,
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -117,7 +114,7 @@ internal fun SportsExpanded(event: IslandEvent.Sports, interactor: IslandActions
                 event.commentary,
                 color = OnCardSecondary,
                 style = MaterialTheme.typography.bodySmall,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -125,70 +122,9 @@ internal fun SportsExpanded(event: IslandEvent.Sports, interactor: IslandActions
     }
 }
 
-@Composable
-internal fun RowScope.CompactSportsRow(event: IslandEvent.Sports) {
-    val accent = accentColorFor(event)
-
-    CompactTeamBadge(event.team1Name, event.team1Icon, accent)
-
-    Spacer(Modifier.width(SpaceSm))
-
-    if (event.team2Name.isNotEmpty()) {
-        if (event.score1.isNotEmpty()) {
-            Text(
-                "${event.score1} - ${event.score2}",
-                color = accent,
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
-            )
-        } else {
-            Text(
-                stringResource(R.string.ax_dynamic_bar_sports_vs),
-                color = SubtleGray,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-            )
-        }
-
-        Spacer(Modifier.width(SpaceSm))
-
-        CompactTeamBadge(event.team2Name, event.team2Icon, accent)
-    } else {
-        Text(
-            event.team1Name,
-            color = OnCardText,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-    }
-
-    Spacer(Modifier.width(SpaceSm))
-
-    StatusBadge(event.status, accent)
-}
-
-@Composable
-private fun CompactTeamBadge(name: String, icon: Drawable?, accent: Color) {
-    icon?.let {
-        Image(
-            bitmap = it.toScaledBitmap(SizeCompactIcon),
-            contentDescription = name,
-            modifier = Modifier.size(SizeCompactIcon).clip(CircleShape),
-            contentScale = ContentScale.Crop,
-        )
-    } ?: Box(
-        modifier = Modifier.size(SizeCompactIcon).clip(CircleShape).background(accent.copy(alpha = AlphaIconBg)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            name.take(3).uppercase(),
-            color = accent,
-            style = TsBadge,
-        )
-    }
-}
+/** The crest and the column that holds it: a scoreboard row, not a hero image. */
+private val TeamCrestSize = 36.dp
+private val TeamColumnWidth = 60.dp
 
 @Composable
 private fun TeamColumn(
@@ -197,19 +133,19 @@ private fun TeamColumn(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(SpaceMd),
-        modifier = Modifier.width(80.dp),
+        verticalArrangement = Arrangement.spacedBy(SpaceXs),
+        modifier = Modifier.width(TeamColumnWidth),
     ) {
         if (icon != null) {
             Image(
                 bitmap = icon,
                 contentDescription = name,
-                modifier = Modifier.size(48.dp).clip(CircleShape),
+                modifier = Modifier.size(TeamCrestSize).clip(CircleShape),
                 contentScale = ContentScale.Crop,
             )
         } else {
             Box(
-                modifier = Modifier.size(48.dp).clip(CircleShape)
+                modifier = Modifier.size(TeamCrestSize).clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) {
@@ -224,7 +160,7 @@ private fun TeamColumn(
         Text(
             name,
             color = OnCardText,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
@@ -236,25 +172,25 @@ private fun TeamColumn(
 private fun ScoreDisplay(score1: String, score2: String, accent: Color) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(SpaceMd),
+        horizontalArrangement = Arrangement.spacedBy(SpaceSm),
     ) {
         Text(
             score1,
             color = OnCardText,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
         )
         Text(
             "-",
             color = SubtleGray,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Light,
         )
         Text(
             score2,
             color = OnCardText,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
         )
@@ -285,4 +221,3 @@ private fun StatusBadge(status: IslandEvent.GameStatus, accent: Color) {
         }
     }
 }
-

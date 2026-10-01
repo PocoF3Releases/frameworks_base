@@ -20,11 +20,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -71,7 +69,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -87,7 +84,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
@@ -222,21 +218,19 @@ private fun ProgressRing(
 }
 
 @Composable
-private fun KeyguardPanelSurface(content: @Composable () -> Unit) {
+private fun KeyguardPanelSurface(
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    content: @Composable () -> Unit,
+) {
     Box(
         modifier = Modifier
             .widthIn(max = ExpandedMaxWidth)
-            .fillMaxWidth()
+            .then(modifier)
             .padding(horizontal = SpaceSection)
             .clip(ShapeXl)
-            .background(CardBg)
-            .border(1.dp, CardBorderBrush, ShapeXl)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {},
-            ),
+            .border(1.dp, CardBorderBrush, ShapeXl),
     ) {
+        AxBlurBackdrop(RadiusXl, CardBg, Modifier.matchParentSize())
         content()
     }
 }
@@ -264,72 +258,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
     val colors = rememberMediaColors(event)
     val motionScheme = MaterialTheme.motionScheme
 
-    Box(
-        modifier = Modifier
-            .widthIn(max = ExpandedMaxWidth)
-            .fillMaxSize()
-            .padding(horizontal = SpaceSection)
-            .clip(ShapeXl)
-            .background(CardBg)
-            .border(1.dp, CardBorderBrush, ShapeXl)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {},
-            ),
-    ) {
-        AnimatedContent(
-            targetState = event.albumArt,
-            transitionSpec = {
-                fadeIn(motionScheme.defaultEffectsSpec()) togetherWith
-                    fadeOut(motionScheme.fastEffectsSpec()) using
-                    SizeTransform(clip = false)
-            },
-            contentKey = { it?.hashCode() ?: 0 },
-            label = "kg_media_backdrop",
-        ) { art ->
-            Box(modifier = Modifier.fillMaxSize()) { 
-                if (art != null) {
-                    Image(
-                        bitmap = art.toScaledBitmap(350.dp),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .matchParentSize()
-                            .graphicsLayer {
-                                scaleX = 1.15f
-                                scaleY = 1.15f
-                            }
-                            .blur(32.dp),
-                        contentScale = ContentScale.Crop,
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Brush.verticalGradient(listOf(colors.tonal, CardBg)))
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            Brush.verticalGradient(
-                                0f to Color.Black.copy(alpha = 0.30f),
-                                0.45f to Color.Black.copy(alpha = 0.55f),
-                                1f to Color.Black.copy(alpha = 0.88f),
-                            )
-                        )
-                )
-
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(colors.accent.copy(alpha = 0.08f))
-                )
-            }
-        }
-
+    KeyguardPanelSurface(Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -396,7 +325,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
             ) { title ->
                 Text(
                     title,
-                    color = Color.White,
+                    color = OnCardText,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     maxLines = 2,
@@ -417,7 +346,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                 ) { artist ->
                     Text(
                         artist,
-                        color = Color.White.copy(alpha = AlphaSecondary),
+                        color = OnCardSecondary,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
@@ -433,7 +362,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                     .fillMaxWidth()
                     .border(1.dp, CardBorderBrush, ShapeCard),
                 shape = ShapeCard,
-                color = Color.Black.copy(alpha = 0.22f),
+                color = DarkCard,
             ) {
                 Column(
                     modifier = Modifier
@@ -468,7 +397,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                                 event.outputDeviceName.ifBlank {
                                     stringResource(R.string.ax_dynamic_bar_now_playing)
                                 },
-                                color = Color.White,
+                                color = OnCardText,
                                 style = MaterialTheme.typography.labelMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -556,12 +485,12 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                         ) {
                             Text(
                                 formatElapsedTime(displayMs),
-                                color = Color.White.copy(alpha = AlphaSecondary),
+                                color = OnCardSecondary,
                                 style = MaterialTheme.typography.labelSmall,
                             )
                             Text(
                                 formatElapsedTime(event.duration),
-                                color = Color.White.copy(alpha = AlphaSecondary),
+                                color = OnCardSecondary,
                                 style = MaterialTheme.typography.labelSmall,
                             )
                         }
@@ -592,12 +521,12 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                         ) {
                             val ca = event.customActions.firstOrNull()
                             if (ca != null) {
-                                CustomActionIcon(ca, tint = Color.White.copy(alpha = AlphaSecondary), modifier = Modifier.size(SizeIconMd))
+                                CustomActionIcon(ca, tint = OnCardSecondary, modifier = Modifier.size(SizeIconMd))
                             } else {
                                 Icon(
                                     Icons.Filled.Shuffle,
                                     stringResource(R.string.ax_dynamic_bar_shuffle),
-                                    tint = Color.White.copy(alpha = AlphaSecondary),
+                                    tint = OnCardSecondary,
                                     modifier = Modifier.size(SizeIconMd),
                                 )
                             }
@@ -617,13 +546,17 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                             Icon(
                                 Icons.Filled.SkipPrevious,
                                 stringResource(R.string.ax_dynamic_bar_previous),
-                                tint = Color.White,
+                                tint = OnCardText,
                                 modifier = Modifier.size(SizeIconMd),
                             )
                         }
 
                         Spacer(Modifier.width(SpaceSm))
 
+                        // Same treatment as the expanded media card's play button: an accent wash
+                        // with the accent itself as the glyph, rather than a solid disc carrying the
+                        // pale-container content role. This is the row's only filled control, so it
+                        // takes the stronger wash and reads as the primary among four bare buttons.
                         Surface(
                             onClick = {
                                 interactor.togglePlayPause()
@@ -633,7 +566,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                                 .size(SizeButtonLg)
                                 .squishAnimation(playPauseToggleCount),
                             shape = CircleShape,
-                            color = colors.accent,
+                            color = colors.accent.copy(alpha = AlphaAccent),
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -651,7 +584,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                                         if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                                         if (playing) stringResource(R.string.ax_dynamic_bar_pause)
                                         else stringResource(R.string.ax_dynamic_bar_play),
-                                        tint = colors.onAccent,
+                                        tint = colors.accent,
                                         modifier = Modifier.size(SizeIconMd),
                                     )
                                 }
@@ -672,7 +605,7 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                             Icon(
                                 Icons.Filled.SkipNext,
                                 stringResource(R.string.ax_dynamic_bar_next),
-                                tint = Color.White,
+                                tint = OnCardText,
                                 modifier = Modifier.size(SizeIconMd),
                             )
                         }
@@ -692,12 +625,12 @@ private fun KeyguardMediaPanel(event: IslandEvent.Media, interactor: IslandActio
                         ) {
                             val ca = event.customActions.getOrNull(1)
                             if (ca != null) {
-                                CustomActionIcon(ca, tint = Color.White.copy(alpha = AlphaSecondary), modifier = Modifier.size(SizeIconMd))
+                                CustomActionIcon(ca, tint = OnCardSecondary, modifier = Modifier.size(SizeIconMd))
                             } else {
                                 Icon(
                                     Icons.Filled.Shuffle,
                                     stringResource(R.string.ax_dynamic_bar_shuffle),
-                                    tint = Color.White.copy(alpha = AlphaSecondary),
+                                    tint = OnCardSecondary,
                                     modifier = Modifier.size(SizeIconMd),
                                 )
                             }
