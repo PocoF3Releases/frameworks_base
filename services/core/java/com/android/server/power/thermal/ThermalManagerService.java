@@ -787,9 +787,6 @@ public class ThermalManagerService extends SystemService {
 
         @Override
         public boolean registerThermalHeadroomListener(IThermalHeadroomListener listener) {
-            if (!mHalReady.get()) {
-                return false;
-            }
             synchronized (mLock) {
                 // Notify its callback after new client registered.
                 final long token = Binder.clearCallingIdentity();
@@ -800,6 +797,16 @@ public class ThermalManagerService extends SystemService {
                 } finally {
                     Binder.restoreCallingIdentity(token);
                 }
+            }
+            mCurrentHeadRoomListenerCount.incrementAndGet();
+            if (mCurrentHeadRoomListenerCount.get() >= mMaxHeadroomListenerCount.get()) {
+                mMaxHeadroomListenerCount.set(mCurrentHeadRoomListenerCount.get());
+            }
+            // Listener registration must not depend on HAL availability. As with thermal
+            // status listeners, keep the registration even when the device has no Thermal HAL.
+            // Headroom remains unavailable and no callback is sent until valid data exists.
+            if (!mHalReady.get()) {
+                return true;
             }
             final HeadroomCallbackData data;
             synchronized (mTemperatureWatcher.mSamples) {
@@ -813,10 +820,6 @@ public class ThermalManagerService extends SystemService {
                         /* ThermalHeadroomListenerDataReported.CallbackType= */
                         THERMAL_HEADROOM_LISTENER_DATA_REPORTED__CALLBACK_TYPE__LISTENER_REGISTRATION,
                         /* uid= */ Binder.getCallingUid());
-            }
-            mCurrentHeadRoomListenerCount.incrementAndGet();
-            if (mCurrentHeadRoomListenerCount.get() >= mMaxHeadroomListenerCount.get()) {
-                mMaxHeadroomListenerCount.set(mCurrentHeadRoomListenerCount.get());
             }
             return true;
         }
