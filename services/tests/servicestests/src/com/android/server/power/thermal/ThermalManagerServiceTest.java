@@ -605,7 +605,7 @@ public class ThermalManagerServiceTest {
         assertTrue(mService.mService.registerThermalStatusListener(mStatusListener1));
         assertTrue(mService.mService.registerThermalEventListenerWithType(mEventListener2,
                 Temperature.TYPE_SKIN));
-        assertFalse(mService.mService.registerThermalHeadroomListener(mHeadroomListener));
+        assertTrue(mService.mService.registerThermalHeadroomListener(mHeadroomListener));
         verify(mEventListener1, timeout(CALLBACK_TIMEOUT_MILLI_SEC)
                 .times(0)).notifyThrottling(any(Temperature.class));
         verify(mStatusListener1, timeout(CALLBACK_TIMEOUT_MILLI_SEC)
@@ -624,7 +624,7 @@ public class ThermalManagerServiceTest {
         assertTrue(mService.mService.unregisterThermalEventListener(mEventListener1));
         assertTrue(mService.mService.unregisterThermalEventListener(mEventListener2));
         assertTrue(mService.mService.unregisterThermalStatusListener(mStatusListener1));
-        assertFalse(mService.mService.unregisterThermalHeadroomListener(mHeadroomListener));
+        assertTrue(mService.mService.unregisterThermalHeadroomListener(mHeadroomListener));
     }
 
     @Test
