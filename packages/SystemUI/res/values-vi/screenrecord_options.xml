@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Ghi ở FPS tối đa</string>
+    <string name="screenrecord_max_fps_summary">Khớp tốc độ khung hình ghi với tốc độ làm mới màn hình hiện tại khi được bộ mã hóa hỗ trợ. Sử dụng nhiều năng lượng và lưu trữ hơn.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Tắt Chất lượng thấp hơn để ghi ở FPS tối đa.</string>
+    <string name="screenrecord_keep_blur_label">Giữ hiệu ứng mờ</string>
+    <string name="screenrecord_keep_blur_summary">Giữ nguyên độ mờ nền giao diện người dùng hệ thống trong khi ghi. Điều này có thể làm giảm độ mịn.</string>
+</resources>

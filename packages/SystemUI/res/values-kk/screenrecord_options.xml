@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Максималды FPS деңгейінде жазыңыз</string>
+    <string name="screenrecord_max_fps_summary">Кодер қолдайтын кезде жазу кадрының жиілігін ағымдағы дисплейді жаңарту жылдамдығына сәйкестендіріңіз. Қуатты және жадты көбірек пайдаланады.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Максималды FPS деңгейінде жазу үшін Төмен сапаны өшіріңіз.</string>
+    <string name="screenrecord_keep_blur_label">Бұлыңғыр әсерлерді сақтаңыз</string>
+    <string name="screenrecord_keep_blur_summary">Жазу кезінде жүйелік UI фондық бұлыңғырлығын сақтаңыз. Бұл тегістікті азайтуы мүмкін.</string>
+</resources>

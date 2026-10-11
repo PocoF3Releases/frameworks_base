@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Maksimum FPS-də qeyd edin</string>
+    <string name="screenrecord_max_fps_summary">Kodlayıcı tərəfindən dəstəkləndikdə qeyd çərçivə sürətini cari displey yeniləmə sürətinə uyğunlaşdırın. Daha çox enerji və yaddaş istifadə edir.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Maksimum FPS-də qeyd etmək üçün Aşağı keyfiyyəti söndürün.</string>
+    <string name="screenrecord_keep_blur_label">Bulanıq effektləri saxlayın</string>
+    <string name="screenrecord_keep_blur_summary">Yazarkən Sistem UI fon bulanıqlığını qoruyun. Bu, hamarlığı azalda bilər.</string>
+</resources>

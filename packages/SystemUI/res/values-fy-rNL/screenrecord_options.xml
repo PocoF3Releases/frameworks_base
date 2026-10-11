@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Opnimme op maksimale FPS</string>
+    <string name="screenrecord_max_fps_summary">Kom oerien mei de opname frame rate mei de hjoeddeistige werjefte ferfarskingsfrekwinsje as stipe troch de encoder. Brûkt mear macht en opslach.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Skeakelje Legere kwaliteit út om op maksimale FPS op te nimmen.</string>
+    <string name="screenrecord_keep_blur_label">Hâld blur-effekten</string>
+    <string name="screenrecord_keep_blur_summary">Bewarje Systeem UI eftergrûn wazig by it opnimmen. Dit kin glêdens ferminderje.</string>
+</resources>

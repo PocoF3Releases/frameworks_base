@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Snimanje pri maksimalnom FPS</string>
+    <string name="screenrecord_max_fps_summary">Uskladite brzinu kadrova snimanja sa trenutnom brzinom osvježavanja ekrana kada to podržava koder. Koristi više energije i prostora za skladištenje.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Isključite Niži kvalitet za snimanje pri maksimalnom FPS.</string>
+    <string name="screenrecord_keep_blur_label">Zadrži efekte zamućenja</string>
+    <string name="screenrecord_keep_blur_summary">Sačuvajte zamućenje pozadine korisničkog interfejsa sistema tokom snimanja. Ovo može smanjiti glatkoću.</string>
+</resources>

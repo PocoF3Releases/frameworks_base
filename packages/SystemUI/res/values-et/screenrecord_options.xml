@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Salvestage maksimaalse FPS-iga</string>
+    <string name="screenrecord_max_fps_summary">Sobitage salvestamise kaadrisagedus praeguse ekraani värskendussagedusega, kui kodeerija seda toetab. Kasutab rohkem energiat ja salvestusruumi.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Maksimaalse FPS-iga salvestamiseks lülitage Madalam kvaliteet välja.</string>
+    <string name="screenrecord_keep_blur_label">Säilitage hägususefektid</string>
+    <string name="screenrecord_keep_blur_summary">Süsteemi kasutajaliidese tausta hägususe säilitamine salvestamise ajal. See võib vähendada sujuvust.</string>
+</resources>

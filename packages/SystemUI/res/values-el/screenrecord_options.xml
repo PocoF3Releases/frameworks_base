@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Εγγραφή στο μέγιστο FPS</string>
+    <string name="screenrecord_max_fps_summary">Αντιστοιχίστε τον ρυθμό καρέ εγγραφής με τον τρέχοντα ρυθμό ανανέωσης της οθόνης όταν υποστηρίζεται από τον κωδικοποιητή. Χρησιμοποιεί περισσότερη ισχύ και αποθήκευση.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Απενεργοποιήστε τη χαμηλότερη ποιότητα για εγγραφή στο μέγιστο FPS.</string>
+    <string name="screenrecord_keep_blur_label">Διατηρήστε τα εφέ θολώματος</string>
+    <string name="screenrecord_keep_blur_summary">Διατηρήστε το θάμπωμα φόντου της διεπαφής χρήστη συστήματος κατά την εγγραφή. Αυτό μπορεί να μειώσει την ομαλότητα.</string>
+</resources>

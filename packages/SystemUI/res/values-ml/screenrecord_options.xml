@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">പരമാവധി FPS-ൽ രേഖപ്പെടുത്തുക</string>
+    <string name="screenrecord_max_fps_summary">എൻകോഡർ പിന്തുണയ്ക്കുമ്പോൾ റെക്കോർഡിംഗ് ഫ്രെയിം റേറ്റ് നിലവിലെ ഡിസ്പ്ലേ പുതുക്കൽ നിരക്കുമായി പൊരുത്തപ്പെടുത്തുക. കൂടുതൽ ശക്തിയും സംഭരണവും ഉപയോഗിക്കുന്നു.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">പരമാവധി FPS-ൽ റെക്കോർഡ് ചെയ്യാൻ താഴ്ന്ന നിലവാരം ഓഫാക്കുക.</string>
+    <string name="screenrecord_keep_blur_label">മങ്ങിക്കൽ ഇഫക്റ്റുകൾ സൂക്ഷിക്കുക</string>
+    <string name="screenrecord_keep_blur_summary">റെക്കോർഡിംഗ് സമയത്ത് സിസ്റ്റം യുഐ പശ്ചാത്തല മങ്ങൽ സംരക്ഷിക്കുക. ഇത് മിനുസമാർന്നത കുറയ്ക്കും.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Rekord op maximal FPS</string>
+    <string name="screenrecord_max_fps_summary">Passt den Opnamframe Taux un den aktuellen Display Erfrëschungsrate wann et vum Encoder ënnerstëtzt gëtt. Benotzt méi Kraaft a Späichere.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Schalt manner Qualitéit aus fir op maximal FPS opzehuelen.</string>
+    <string name="screenrecord_keep_blur_label">Halt Blur Effekter</string>
+    <string name="screenrecord_keep_blur_summary">Erhaalen System UI Hannergrond Blur beim Opnam. Dëst kann d\'Gläichheet reduzéieren.</string>
+</resources>

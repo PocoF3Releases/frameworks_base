@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">บันทึกที่ FPS สูงสุด</string>
+    <string name="screenrecord_max_fps_summary">จับคู่อัตราเฟรมการบันทึกกับอัตรารีเฟรชการแสดงผลปัจจุบันเมื่อตัวเข้ารหัสรองรับ ใช้พลังงานและการจัดเก็บมากขึ้น</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ปิดคุณภาพต่ำลงเพื่อบันทึกที่ FPS สูงสุด</string>
+    <string name="screenrecord_keep_blur_label">เก็บเอฟเฟกต์เบลอ</string>
+    <string name="screenrecord_keep_blur_summary">รักษาความเบลอของพื้นหลัง System UI ขณะบันทึก สิ่งนี้อาจลดความเรียบเนียน</string>
+</resources>
