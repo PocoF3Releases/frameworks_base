@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Registra a su màssimu de FPS</string>
+    <string name="screenrecord_max_fps_summary">Adata sa frequèntzia de fotogramas de sa registratzione a sa frequèntzia de atualizatzione de s’ischermu cando su codificadore lu permitit. Consumit prus energia e ispàtziu de archiviatzione.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Disativa «Calidade bàscia» pro registrare a su màssimu de FPS.</string>
+    <string name="screenrecord_keep_blur_label">Mantene sos efetos de isfumadura</string>
+    <string name="screenrecord_keep_blur_summary">Mantene s’isfumadura de su fundu de s’interfache de sistema durante sa registratzione. Podet reduire sa fluididade.</string>
+</resources>

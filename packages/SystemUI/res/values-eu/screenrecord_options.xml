@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Grabatu FPS gehienez</string>
+    <string name="screenrecord_max_fps_summary">Lotu grabaketa fotograma-abiadura uneko pantailaren freskatze-abiadurarekin kodetzaileak onartzen duenean. Energia eta biltegiratze gehiago erabiltzen ditu.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Desaktibatu kalitate baxuagoa FPS maximoan grabatzeko.</string>
+    <string name="screenrecord_keep_blur_label">Mantendu lausotze-efektuak</string>
+    <string name="screenrecord_keep_blur_summary">Gorde sistemaren interfazearen atzeko planoko lausotasuna grabatzen ari zaren bitartean. Horrek leuntasuna murriztu dezake.</string>
+</resources>

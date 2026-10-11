@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Rekam pada FPS maksimum</string>
+    <string name="screenrecord_max_fps_summary">Cocokkan kecepatan frame rekaman dengan kecepatan refresh tampilan saat ini bila didukung oleh encoder. Menggunakan lebih banyak daya dan penyimpanan.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Matikan Kualitas lebih rendah untuk merekam pada FPS maksimum.</string>
+    <string name="screenrecord_keep_blur_label">Pertahankan efek buram</string>
+    <string name="screenrecord_keep_blur_summary">Pertahankan keburaman latar belakang UI Sistem saat merekam. Hal ini dapat mengurangi kehalusan.</string>
+</resources>

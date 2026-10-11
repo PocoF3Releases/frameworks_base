@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">កត់ត្រានៅ FPS អតិបរមា</string>
+    <string name="screenrecord_max_fps_summary">ផ្គូផ្គង​អត្រា​ស៊ុម​ថត​ទៅនឹង​អត្រា​បង្ហាញ​បច្ចុប្បន្ន​ឡើងវិញ នៅពេល​ដែល​គាំទ្រ​ដោយ​កម្មវិធី​បំប្លែង​កូដ។ ប្រើប្រាស់ថាមពល និងទំហំផ្ទុកកាន់តែច្រើន។</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">បិទគុណភាពទាប ដើម្បីថតនៅ FPS អតិបរមា។</string>
+    <string name="screenrecord_keep_blur_label">រក្សាផលប៉ះពាល់ព្រិលៗ</string>
+    <string name="screenrecord_keep_blur_summary">រក្សាទុកផ្ទៃខាងក្រោយ UI របស់ប្រព័ន្ធ ខណៈពេលកំពុងថត។ នេះអាចកាត់បន្ថយភាពរលោង។</string>
+</resources>

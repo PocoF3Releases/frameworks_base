@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Ta opp med maksimal biletfrekvens</string>
+    <string name="screenrecord_max_fps_summary">Tilpass biletfrekvensen i opptaket til oppdateringsfrekvensen til skjermen når kodaren støttar det. Brukar meir straum og lagringsplass.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Slå av «Lågare kvalitet» for å ta opp med maksimal biletfrekvens.</string>
+    <string name="screenrecord_keep_blur_label">Behald uskarpleikseffektar</string>
+    <string name="screenrecord_keep_blur_summary">Behald uskarp bakgrunn i systemgrensesnittet under opptak. Dette kan redusere flyten.</string>
+</resources>

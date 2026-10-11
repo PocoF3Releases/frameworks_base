@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Записувати з максимальною частотою кадрів</string>
+    <string name="screenrecord_max_fps_summary">Узгоджувати частоту кадрів запису з поточною частотою оновлення екрана, якщо кодер це підтримує. Збільшує споживання енергії та використання сховища.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Вимкніть «Нижча якість» для запису з максимальною частотою кадрів.</string>
+    <string name="screenrecord_keep_blur_label">Зберігати ефекти розмиття</string>
+    <string name="screenrecord_keep_blur_summary">Зберігати розмиття фону системного інтерфейсу під час запису. Це може знизити плавність.</string>
+</resources>

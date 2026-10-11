@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ჩაწერა მაქსიმალურ FPS-ზე</string>
+    <string name="screenrecord_max_fps_summary">შეადარეთ ჩაწერის კადრების სიხშირე ეკრანის განახლების მიმდინარე სიჩქარეს, როდესაც მხარდაჭერილია კოდირებით. იყენებს მეტ ენერგიას და მეხსიერებას.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">გამორთეთ დაბალი ხარისხი მაქსიმალურ FPS-ზე ჩასაწერად.</string>
+    <string name="screenrecord_keep_blur_label">შეინახეთ ბუნდოვანი ეფექტები</string>
+    <string name="screenrecord_keep_blur_summary">შეინახეთ სისტემის ინტერფეისის ფონის დაბინდვა ჩაწერისას. ამან შეიძლება შეამციროს სიგლუვეს.</string>
+</resources>
