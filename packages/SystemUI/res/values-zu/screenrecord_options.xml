@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Qopha nge-FPS ephezulu</string>
+    <string name="screenrecord_max_fps_summary">Fanisa izinga lozimele lokurekhoda nezinga lamanje lokuvuselela isibonisi uma lisekelwa isishumeki. Isebenzisa amandla engeziwe nesitoreji.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Vala ikhwalithi Ephansi ukuze urekhode ngobuningi be-FPS.</string>
+    <string name="screenrecord_keep_blur_label">Gcina imiphumela yokufiphala</string>
+    <string name="screenrecord_keep_blur_summary">Londoloza ukufiphala kwengemuva le-UI yesistimu ngenkathi uqopha. Lokhu kungase kunciphise ukushelela.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Optag ved maksimal FPS</string>
+    <string name="screenrecord_max_fps_summary">Tilpas optagelsens billedhastighed til den aktuelle skærmopdateringshastighed, når den understøttes af encoderen. Bruger mere strøm og lagerplads.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Slå Lavere kvalitet fra for at optage ved maksimal FPS.</string>
+    <string name="screenrecord_keep_blur_label">Behold sløringseffekter</string>
+    <string name="screenrecord_keep_blur_summary">Bevar System UI-baggrundssløring under optagelse. Dette kan reducere glathed.</string>
+</resources>

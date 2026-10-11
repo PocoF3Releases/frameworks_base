@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ضبط در حداکثر FPS</string>
+    <string name="screenrecord_max_fps_summary">هنگامی که توسط رمزگذار پشتیبانی می شود، نرخ فریم ضبط را با نرخ تازه سازی نمایشگر فعلی مطابقت دهید. از قدرت و ذخیره سازی بیشتری استفاده می کند.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">کیفیت پایین‌تر را خاموش کنید تا با حداکثر FPS ضبط کنید.</string>
+    <string name="screenrecord_keep_blur_label">جلوه های تاری را حفظ کنید</string>
+    <string name="screenrecord_keep_blur_summary">هنگام ضبط، تاری پس‌زمینه رابط کاربری سیستم را حفظ کنید. این ممکن است صافی را کاهش دهد.</string>
+</resources>

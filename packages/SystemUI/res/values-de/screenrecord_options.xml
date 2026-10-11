@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Nehmen Sie mit maximaler FPS auf</string>
+    <string name="screenrecord_max_fps_summary">Passen Sie die Aufnahmebildrate an die aktuelle Bildwiederholfrequenz an, sofern dies vom Encoder unterstützt wird. Verbraucht mehr Strom und Speicher.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Deaktivieren Sie „Niedrigere Qualität“, um mit maximaler FPS aufzunehmen.</string>
+    <string name="screenrecord_keep_blur_label">Unschärfeeffekte beibehalten</string>
+    <string name="screenrecord_keep_blur_summary">Behalten Sie die Hintergrundunschärfe der System-Benutzeroberfläche während der Aufnahme bei. Dies kann die Glätte beeinträchtigen.</string>
+</resources>

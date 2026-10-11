@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Gravar à taxa máxima de fotogramas</string>
+    <string name="screenrecord_max_fps_summary">Ajustar a taxa de fotogramas da gravação à taxa de atualização atual do ecrã, quando o codificador o permitir. Consome mais energia e espaço de armazenamento.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Desative «Qualidade inferior» para gravar à taxa máxima de fotogramas.</string>
+    <string name="screenrecord_keep_blur_label">Manter os efeitos de desfocagem</string>
+    <string name="screenrecord_keep_blur_summary">Manter a desfocagem do fundo da interface do sistema durante a gravação. Pode reduzir a fluidez.</string>
+</resources>

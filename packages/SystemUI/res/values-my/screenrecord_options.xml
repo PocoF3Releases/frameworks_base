@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">အများဆုံး FPS ဖြင့် မှတ်တမ်းတင်ပါ။</string>
+    <string name="screenrecord_max_fps_summary">ကုဒ်ပြောင်းကိရိယာမှ ပံ့ပိုးပေးသောအခါ မှတ်တမ်းတင်ဘောင်နှုန်းကို လက်ရှိပြသမှု ပြန်လည်စတင်သည့်နှုန်းနှင့် ကိုက်ညီပါ။ ပါဝါနှင့် သိုလှောင်မှုကို ပိုမိုအသုံးပြုသည်။</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">အမြင့်ဆုံး FPS တွင် မှတ်တမ်းတင်ရန် အရည်အသွေးနိမ့်မှုကို ပိတ်ပါ။</string>
+    <string name="screenrecord_keep_blur_label">မှုန်ဝါးသောအကျိုးသက်ရောက်မှုများကိုထားပါ။</string>
+    <string name="screenrecord_keep_blur_summary">ရိုက်ကူးနေစဉ်တွင် စနစ် UI နောက်ခံမှုန်ဝါးမှုကို ထိန်းသိမ်းပါ။ ၎င်းသည် ချောမွေ့မှုကို လျှော့ချနိုင်သည်။</string>
+</resources>

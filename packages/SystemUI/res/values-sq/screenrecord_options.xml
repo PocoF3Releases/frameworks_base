@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Regjistroni në FPS maksimale</string>
+    <string name="screenrecord_max_fps_summary">Përputhni shpejtësinë e kuadrove të regjistrimit me shpejtësinë aktuale të rifreskimit të ekranit kur mbështetet nga koduesi. Përdor më shumë energji dhe ruajtje.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Çaktivizo cilësinë e ulët për të regjistruar në FPS maksimale.</string>
+    <string name="screenrecord_keep_blur_label">Mbani efektet e turbullimit</string>
+    <string name="screenrecord_keep_blur_summary">Ruaj turbullimin e sfondit të ndërfaqes së përdoruesit të sistemit gjatë regjistrimit. Kjo mund të zvogëlojë butësinë.</string>
+</resources>

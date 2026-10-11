@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Clàraich aig an FPS as àirde</string>
+    <string name="screenrecord_max_fps_summary">Dèan maids eadar an ìre frèam clàraidh agus an ìre ùrachaidh taisbeanaidh gnàthach nuair a gheibh thu taic bhon chòdadair. A \'cleachdadh barrachd cumhachd agus stòradh.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Cuir dheth càileachd nas ìsle gus clàradh aig an FPS as àirde.</string>
+    <string name="screenrecord_keep_blur_label">Cùm buaidhean blur</string>
+    <string name="screenrecord_keep_blur_summary">Glèidh blur cùl-fhiosrachaidh UI System fhad ‘s a tha thu a’ clàradh. Dh\'fhaodadh seo lùghdachadh a dhèanamh air rèidh.</string>
+</resources>

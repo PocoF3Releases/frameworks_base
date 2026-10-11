@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Záznam na maximální FPS</string>
+    <string name="screenrecord_max_fps_summary">Přizpůsobte snímkovou frekvenci záznamu aktuální obnovovací frekvenci displeje, pokud je podporována kodérem. Spotřebuje více energie a úložiště.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Vypněte Nižší kvalitu pro záznam při maximální FPS.</string>
+    <string name="screenrecord_keep_blur_label">Zachovejte efekty rozostření</string>
+    <string name="screenrecord_keep_blur_summary">Zachovat rozostření pozadí uživatelského rozhraní systému při nahrávání. To může snížit hladkost.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Mag-record sa maximum na FPS</string>
+    <string name="screenrecord_max_fps_summary">Itugma ang recording frame rate sa kasalukuyang display refresh rate kapag sinusuportahan ng encoder. Gumagamit ng higit na kapangyarihan at imbakan.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">I-off ang Mas mababang kalidad para makapag-record sa maximum na FPS.</string>
+    <string name="screenrecord_keep_blur_label">Panatilihin ang blur effect</string>
+    <string name="screenrecord_keep_blur_summary">Panatilihin ang blur ng background ng System UI habang nagre-record. Ito ay maaaring mabawasan ang kinis.</string>
+</resources>

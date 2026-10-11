@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ਵੱਧ ਤੋਂ ਵੱਧ FPS \'ਤੇ ਰਿਕਾਰਡ ਕਰੋ</string>
+    <string name="screenrecord_max_fps_summary">ਏਨਕੋਡਰ ਦੁਆਰਾ ਸਮਰਥਿਤ ਹੋਣ \'ਤੇ ਰਿਕਾਰਡਿੰਗ ਫਰੇਮ ਰੇਟ ਨੂੰ ਮੌਜੂਦਾ ਡਿਸਪਲੇ ਰਿਫਰੈਸ਼ ਦਰ ਨਾਲ ਮੇਲ ਕਰੋ। ਜ਼ਿਆਦਾ ਪਾਵਰ ਅਤੇ ਸਟੋਰੇਜ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ਵੱਧ ਤੋਂ ਵੱਧ FPS \'ਤੇ ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਹੇਠਲੀ ਗੁਣਵੱਤਾ ਨੂੰ ਬੰਦ ਕਰੋ।</string>
+    <string name="screenrecord_keep_blur_label">ਧੁੰਦਲੇ ਪ੍ਰਭਾਵਾਂ ਨੂੰ ਰੱਖੋ</string>
+    <string name="screenrecord_keep_blur_summary">ਰਿਕਾਰਡਿੰਗ ਦੌਰਾਨ ਸਿਸਟਮ UI ਬੈਕਗ੍ਰਾਊਂਡ ਬਲਰ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖੋ। ਇਹ ਨਿਰਵਿਘਨਤਾ ਨੂੰ ਘਟਾ ਸਕਦਾ ਹੈ.</string>
+</resources>

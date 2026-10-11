@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Regjistrâ al FPS massim</string>
+    <string name="screenrecord_max_fps_summary">Corispondi al tas di cuadris di regjistrazion al tas di rinfrescj dal display corint cuant che al è supuartât dal codificadôr. Al dopre plui energjie e spazi di archiviazion.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Disactiva la cualitât plui basse par regjistrâ al FPS massim.</string>
+    <string name="screenrecord_keep_blur_label">Mantignî i efiets di sfume</string>
+    <string name="screenrecord_keep_blur_summary">Preservâ la sfume dal sfont de interface utent dal sisteme intant che si regjistre. Chest al pues ridusi la lissure.</string>
+</resources>

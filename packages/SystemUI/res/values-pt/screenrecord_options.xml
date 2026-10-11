@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Grave no FPS máximo</string>
+    <string name="screenrecord_max_fps_summary">Combine a taxa de quadros de gravação com a taxa de atualização de exibição atual quando suportada pelo codificador. Usa mais energia e armazenamento.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Desative a qualidade inferior para gravar no FPS máximo.</string>
+    <string name="screenrecord_keep_blur_label">Mantenha os efeitos de desfoque</string>
+    <string name="screenrecord_keep_blur_summary">Preservar o desfoque de fundo da interface do sistema durante a gravação. Isso pode reduzir a suavidade.</string>
+</resources>
