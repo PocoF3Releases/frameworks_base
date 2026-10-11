@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ئەڭ يۇقىرى بولغاندا FPS خاتىرىلەڭ</string>
+    <string name="screenrecord_max_fps_summary">كودلاشتۇرغۇچ قوللىغاندا خاتىرىلەش رامكىسى نىسبىتىنى نۆۋەتتىكى كۆرسىتىش يېڭىلاش نىسبىتىگە ماسلاشتۇرۇڭ. تېخىمۇ كۆپ توك ۋە ساقلاشنى ئىشلىتىدۇ.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ئەڭ تۆۋەن FPS نى خاتىرىلەش ئۈچۈن تۆۋەن سۈپەتنى ئېتىڭ.</string>
+    <string name="screenrecord_keep_blur_label">تۇتۇق ئۈنۈمنى ساقلاڭ</string>
+    <string name="screenrecord_keep_blur_summary">خاتىرىلەۋاتقاندا سىستېما UI تەگلىكىنى ساقلاڭ. بۇ سىلىقلىقنى ئازايتىشى مۇمكىن.</string>
+</resources>

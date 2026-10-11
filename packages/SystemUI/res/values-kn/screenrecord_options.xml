@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ಗರಿಷ್ಠ FPS ನಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ</string>
+    <string name="screenrecord_max_fps_summary">ಎನ್‌ಕೋಡರ್ ಬೆಂಬಲಿಸಿದಾಗ ರೆಕಾರ್ಡಿಂಗ್ ಫ್ರೇಮ್ ದರವನ್ನು ಪ್ರಸ್ತುತ ಡಿಸ್‌ಪ್ಲೇ ರಿಫ್ರೆಶ್ ದರಕ್ಕೆ ಹೊಂದಿಸಿ. ಹೆಚ್ಚಿನ ಶಕ್ತಿ ಮತ್ತು ಸಂಗ್ರಹಣೆಯನ್ನು ಬಳಸುತ್ತದೆ.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ಗರಿಷ್ಠ FPS ನಲ್ಲಿ ರೆಕಾರ್ಡ್ ಮಾಡಲು ಕಡಿಮೆ ಗುಣಮಟ್ಟವನ್ನು ಆಫ್ ಮಾಡಿ.</string>
+    <string name="screenrecord_keep_blur_label">ಮಸುಕು ಪರಿಣಾಮಗಳನ್ನು ಇರಿಸಿ</string>
+    <string name="screenrecord_keep_blur_summary">ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವಾಗ ಸಿಸ್ಟಂ UI ಹಿನ್ನೆಲೆ ಮಸುಕು ಸಂರಕ್ಷಿಸಿ. ಇದು ಮೃದುತ್ವವನ್ನು ಕಡಿಮೆ ಮಾಡಬಹುದು.</string>
+</resources>

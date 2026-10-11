@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">以最大 FPS 錄製</string>
+    <string name="screenrecord_max_fps_summary">當編碼器支援時，將錄製幀速率與目前顯示更新率相符。使用更多的電力和儲存空間。</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">關閉“較低品質”以最大 FPS 進行錄製。</string>
+    <string name="screenrecord_keep_blur_label">保持模糊效果</string>
+    <string name="screenrecord_keep_blur_summary">錄製時保留系統 UI 背景模糊。這可能會降低平滑度。</string>
+</resources>

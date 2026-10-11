@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">அதிகபட்ச FPS இல் பதிவு செய்யவும்</string>
+    <string name="screenrecord_max_fps_summary">குறியாக்கி ஆதரிக்கும் போது ரெக்கார்டிங் பிரேம் வீதத்தை தற்போதைய காட்சி புதுப்பிப்பு வீதத்துடன் பொருத்தவும். அதிக சக்தி மற்றும் சேமிப்பகத்தைப் பயன்படுத்துகிறது.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">அதிகபட்ச FPS இல் பதிவு செய்ய குறைந்த தரத்தை முடக்கவும்.</string>
+    <string name="screenrecord_keep_blur_label">மங்கலான விளைவுகளை வைத்திருங்கள்</string>
+    <string name="screenrecord_keep_blur_summary">பதிவு செய்யும் போது கணினி UI பின்னணி மங்கலைப் பாதுகாக்கவும். இது மென்மையை குறைக்கலாம்.</string>
+</resources>
