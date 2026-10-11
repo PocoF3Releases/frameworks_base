@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Înregistrați la FPS maxim</string>
+    <string name="screenrecord_max_fps_summary">Potriviți rata cadrelor de înregistrare cu rata de reîmprospătare curentă a afișajului atunci când este acceptată de codificator. Utilizează mai multă putere și spațiu de stocare.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Dezactivați calitate inferioară pentru a înregistra la FPS maxim.</string>
+    <string name="screenrecord_keep_blur_label">Păstrați efectele de estompare</string>
+    <string name="screenrecord_keep_blur_summary">Păstrați neclaritatea de fundal în interfața de utilizare a sistemului în timpul înregistrării. Acest lucru poate reduce netezimea.</string>
+</resources>

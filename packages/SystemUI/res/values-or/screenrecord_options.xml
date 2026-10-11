@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ସର୍ବାଧିକ FPS ରେ ରେକର୍ଡ କରନ୍ତୁ |</string>
+    <string name="screenrecord_max_fps_summary">ଏନକୋଡର୍ ଦ୍ୱାରା ସମର୍ଥିତ ହେଲେ ରେକର୍ଡିଂ ଫ୍ରେମ୍ ହାରକୁ ସାମ୍ପ୍ରତିକ ପ୍ରଦର୍ଶନ ସତେଜ ହାର ସହିତ ମେଳ କରନ୍ତୁ | ଅଧିକ ଶକ୍ତି ଏବଂ ସଂରକ୍ଷଣ ବ୍ୟବହାର କରେ |</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ସର୍ବାଧିକ FPS ରେ ରେକର୍ଡ କରିବାକୁ ନିମ୍ନ ଗୁଣକୁ ବନ୍ଦ କରନ୍ତୁ |</string>
+    <string name="screenrecord_keep_blur_label">ଅସ୍ପଷ୍ଟ ପ୍ରଭାବ ରଖନ୍ତୁ |</string>
+    <string name="screenrecord_keep_blur_summary">ରେକର୍ଡିଂ କରିବା ସମୟରେ ସିଷ୍ଟମ୍ UI ପୃଷ୍ଠଭୂମି ଅସ୍ପଷ୍ଟ ସଂରକ୍ଷଣ କରନ୍ତୁ | ଏହା ସୁଗମତା ହ୍ରାସ କରିପାରେ |</string>
+</resources>

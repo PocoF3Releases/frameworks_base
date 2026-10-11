@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">උපරිම FPS හි වාර්තා කරන්න</string>
+    <string name="screenrecord_max_fps_summary">කේතකය මඟින් සහාය දක්වන විට පටිගත කිරීමේ රාමු අනුපාතය වත්මන් සංදර්ශක නැවුම් කිරීමේ අනුපාතයට ගළපන්න. වැඩි බලයක් සහ ගබඩාවක් භාවිතා කරයි.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">උපරිම FPS හි වාර්තා කිරීමට අඩු ගුණත්වය අක්‍රිය කරන්න.</string>
+    <string name="screenrecord_keep_blur_label">නොපැහැදිලි බලපෑම් තබා ගන්න</string>
+    <string name="screenrecord_keep_blur_summary">පටිගත කිරීමේදී පද්ධති UI පසුබිම් බොඳවීම ආරක්ෂා කරන්න. මෙය සුමට බව අඩු කළ හැකිය.</string>
+</resources>

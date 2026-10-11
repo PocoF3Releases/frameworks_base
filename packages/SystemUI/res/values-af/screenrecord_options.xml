@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Teken op by maksimum FPS</string>
+    <string name="screenrecord_max_fps_summary">Match the recording frame rate to the current display refresh rate when supported by the encoder. Gebruik meer krag en berging.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Skakel laer kwaliteit af om teen maksimum FPS op te neem.</string>
+    <string name="screenrecord_keep_blur_label">Hou vervaag-effekte</string>
+    <string name="screenrecord_keep_blur_summary">Preserve System UI background blur while recording. Dit kan gladheid verminder.</string>
+</resources>

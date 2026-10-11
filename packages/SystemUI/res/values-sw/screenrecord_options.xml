@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Rekodi kwa kiwango cha juu zaidi cha FPS</string>
+    <string name="screenrecord_max_fps_summary">Linganisha kasi ya fremu ya kurekodi na kasi ya sasa ya kuonyesha upya inapotumika na kisimbaji. Hutumia nishati na hifadhi zaidi.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Zima Ubora wa Chini ili kurekodi kwa kiwango cha juu cha FPS.</string>
+    <string name="screenrecord_keep_blur_label">Weka athari za ukungu</string>
+    <string name="screenrecord_keep_blur_summary">Hifadhi ukungu wa mandharinyuma ya UI ya Mfumo unaporekodi. Hii inaweza kupunguza ulaini.</string>
+</resources>
