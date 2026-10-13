@@ -746,6 +746,7 @@ cc_library {
 // Build Rust bindings for PermissionController. Needed by keystore2.
 aidl_interface {
     name: "android.os.permissions_aidl",
+    recovery_available: true,
     unstable: true,
     local_include_dir: ".",
     srcs: [
@@ -765,6 +766,7 @@ aidl_interface {
 // Build Rust bindings for remote provisioning. Needed by keystore2.
 aidl_interface {
     name: "android.security.rkp_aidl",
+    recovery_available: true,
     unstable: true,
     srcs: [
         "android/security/rkp/*.aidl",

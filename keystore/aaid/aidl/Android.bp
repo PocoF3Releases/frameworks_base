@@ -18,6 +18,7 @@ package {
 
 aidl_interface {
     name: "android.security.aaid_aidl",
+    recovery_available: true,
     srcs: ["android/security/keystore/*.aidl"],
     unstable: true,
     backend: {

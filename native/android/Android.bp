@@ -241,6 +241,7 @@ filegroup {
 
 aidl_interface {
     name: "packagemanager_aidl",
+    recovery_available: true,
     unstable: true,
     local_include_dir: "aidl",
     host_supported: true,
