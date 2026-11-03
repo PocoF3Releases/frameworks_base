@@ -82,13 +82,36 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
             }
 
             try {
-                mGadgetProxy = IUsbGadget.Stub.asInterface(
-                        ServiceManager.waitForService(USB_GADGET_AIDL_SERVICE));
+                IBinder binder = ServiceManager.waitForService(USB_GADGET_AIDL_SERVICE);
+                if (binder == null) {
+                    return;
+                }
+                binder.linkToDeath(() -> {
+                    synchronized (mGadgetProxyLock) {
+                        if (mGadgetProxy != null && mGadgetProxy.asBinder() == binder) {
+                            serviceDied();
+                        }
+                    }
+                }, 0);
+                mGadgetProxy = IUsbGadget.Stub.asInterface(binder);
             } catch (NoSuchElementException e) {
                 logAndPrintException(pw, "connectToProxy: usb gadget hal service not found."
                         + " Did the service fail to start?", e);
+            } catch (RemoteException e) {
+                logAndPrintException(pw, "connectToProxy: usb gadget hal service died", e);
             }
         }
+    }
+
+    @GuardedBy("mGadgetProxyLock")
+    private IUsbGadget getGadgetProxy() throws RemoteException {
+        if (mGadgetProxy == null) {
+            connectToProxy(mPw);
+        }
+        if (mGadgetProxy == null) {
+            throw new RemoteException("IUsbGadget is not available");
+        }
+        return mGadgetProxy;
     }
 
     static boolean isServicePresent(IndentingPrintWriter pw) {
@@ -111,7 +134,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
     public void getCurrentUsbFunctions(long operationId) {
         synchronized (mGadgetProxyLock) {
             try {
-                mGadgetProxy.getCurrentUsbFunctions(new UsbGadgetCallback(), operationId);
+                getGadgetProxy().getCurrentUsbFunctions(new UsbGadgetCallback(), operationId);
             } catch (RemoteException e) {
                 logAndPrintException(mPw,
                         "RemoteException while calling getCurrentUsbFunctions"
@@ -125,7 +148,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
     public void getUsbSpeed(long operationId) {
         try {
             synchronized (mGadgetProxyLock) {
-                mGadgetProxy.getUsbSpeed(new UsbGadgetCallback(), operationId);
+                getGadgetProxy().getUsbSpeed(new UsbGadgetCallback(), operationId);
             }
         } catch (RemoteException e) {
             logAndPrintException(mPw,
@@ -139,7 +162,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
     public void reset(long operationId) {
         try {
             synchronized (mGadgetProxyLock) {
-                mGadgetProxy.reset(new UsbGadgetCallback(), operationId);
+                getGadgetProxy().reset(new UsbGadgetCallback(), operationId);
             }
         } catch (RemoteException e) {
             logAndPrintException(mPw,
@@ -156,7 +179,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
             mUsbGadgetCallback = new UsbGadgetCallback(null, mRequest,
                                       mFunctions, mChargingFunctions);
             synchronized (mGadgetProxyLock) {
-                mGadgetProxy.setCurrentUsbFunctions(mFunctions, mUsbGadgetCallback,
+                getGadgetProxy().setCurrentUsbFunctions(mFunctions, mUsbGadgetCallback,
                         timeout, operationId);
             }
         } catch (RemoteException e) {
