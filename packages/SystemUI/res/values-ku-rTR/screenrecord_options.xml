@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">"Bi herî zêde FPS tomar bike"</string>
+    <string name="screenrecord_max_fps_summary">"Dema ku kodker piştgirî dike, rêjeya çarçoveyên tomarê bi rêjeya nûkirina dîmendera heyî re li hev bîne. Hêz û cihê hilanînê yê zêdetir bi kar tîne."</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">"Ji bo tomarkirinê bi herî zêde FPS, “Lower quality” neçalak bike."</string>
+    <string name="screenrecord_keep_blur_label">"Bandorên nezelalkirinê biparêze"</string>
+    <string name="screenrecord_keep_blur_summary">"Di dema tomarkirinê de nezelaliya paşxaneya System UI biparêze. Dibe ku ev nermbûna tevgerê kêm bike."</string>
+</resources>
