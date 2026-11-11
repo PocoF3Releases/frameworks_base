@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Įrašykite maksimaliu FPS</string>
+    <string name="screenrecord_max_fps_summary">Suderinkite įrašymo kadrų dažnį su esamu ekrano atnaujinimo dažniu, kai jį palaiko koduotuvas. Naudoja daugiau energijos ir saugojimo vietos.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Norėdami įrašyti maksimaliu FPS, išjunkite žemesnę kokybę.</string>
+    <string name="screenrecord_keep_blur_label">Išsaugokite suliejimo efektus</string>
+    <string name="screenrecord_keep_blur_summary">Įrašydami išsaugokite sistemos vartotojo sąsajos fono suliejimą. Tai gali sumažinti glotnumą.</string>
+</resources>

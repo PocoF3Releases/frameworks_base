@@ -190,26 +190,34 @@ constructor(
             }
             .onEach { recordingContext ->
                 with(recordingContext) {
-                    if (service != null) {
-                        when (status) {
-                            is Started -> {
+                    when (status) {
+                        is Started -> {
+                            service?.let { currentService ->
                                 val parameters = status.parameters
-                                if (service.isRecording) {
-                                    service.updateParameters(parameters)
-                                } else {
-                                    service.startRecording(parameters)
+                                val wasRecording = currentService.isRecording
+                                val succeeded = currentService.safeBinderCall {
+                                    if (wasRecording) updateParameters(parameters)
+                                    else startRecording(parameters)
+                                }
+                                if (!succeeded) {
+                                    isServiceBound.value = false
+                                } else if (!wasRecording) {
                                     screenRecordUxController.updateState(true)
                                     logger.startScreenRecording(parameters)
                                 }
                             }
-                            is Stopped -> {
-                                service.stopRecording(status.reason)
-                                screenRecordUxController.updateState(false)
-                                logger.stopScreenRecording(status.reason)
-                            }
-                            is Starting -> {
-                                /* do nothing */
-                            }
+                        }
+                        is Stopped -> {
+                            val stopped = service?.safeBinderCall {
+                                stopRecording(status.reason)
+                            } ?: true
+                            if (!stopped) isServiceBound.value = false
+                            // Service death must restore the UI policy even with no live binder.
+                            screenRecordUxController.updateState(false)
+                            logger.stopScreenRecording(status.reason)
+                        }
+                        is Starting -> {
+                            /* do nothing */
                         }
                     }
                 }

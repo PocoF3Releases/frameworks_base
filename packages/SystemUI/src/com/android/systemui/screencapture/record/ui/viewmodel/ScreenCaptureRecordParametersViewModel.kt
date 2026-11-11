@@ -70,11 +70,16 @@ constructor(
             interactor.shouldShowFrontCamera = value
         }
 
+    val blurControlSupported: Boolean by interactor::blurControlSupported
+    val keepBlur: Boolean by interactor::keepBlur
+
     val lowQuality: Boolean by interactor::lowQuality
 
     val longerDuration: Boolean by interactor::longerDuration
 
     val hevc: Boolean by interactor::hevc
+    val maxFpsSupported: Boolean by interactor::maxFpsSupported
+    val maxFps: Boolean by interactor::maxFps
 
     val keepScreenAwake: Boolean by interactor::keepScreenAwake
 
@@ -144,6 +149,10 @@ constructor(
         screenCaptureCameraHintInteractor.onHintShown()
     }
 
+    fun setKeepBlur(keepBlur: Boolean) {
+        interactor.keepBlur = keepBlur
+    }
+
     fun setLowQuality(lowQuality: Boolean) {
         interactor.lowQuality = lowQuality
     }
@@ -158,6 +167,10 @@ constructor(
 
     fun setKeepScreenAwake(keepScreenAwake: Boolean) {
         interactor.keepScreenAwake = keepScreenAwake
+    }
+
+    fun setMaxFps(maxFps: Boolean) {
+        interactor.maxFps = maxFps
     }
 
     @AssistedFactory

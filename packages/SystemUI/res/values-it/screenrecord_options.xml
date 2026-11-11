@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Registra al massimo FPS</string>
+    <string name="screenrecord_max_fps_summary">Abbina la frequenza fotogrammi di registrazione alla frequenza di aggiornamento del display corrente quando supportata dal codificatore. Utilizza più energia e spazio di archiviazione.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Disattiva la qualità inferiore per registrare al massimo FPS.</string>
+    <string name="screenrecord_keep_blur_label">Mantieni gli effetti di sfocatura</string>
+    <string name="screenrecord_keep_blur_summary">Preserva la sfocatura dello sfondo dell\'interfaccia utente del sistema durante la registrazione. Ciò potrebbe ridurre la scorrevolezza.</string>
+</resources>

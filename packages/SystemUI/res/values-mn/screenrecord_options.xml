@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Хамгийн их FPS дээр бичээрэй</string>
+    <string name="screenrecord_max_fps_summary">Бичлэгийн фрэймийн хурдыг кодлогч дэмждэг бол одоогийн дэлгэцийн сэргээх хурдтай тааруулна уу. Илүү их эрчим хүч, хадгалах сан ашигладаг.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Хамгийн их FPS дээр бичихийн тулд Доод чанарыг унтраа.</string>
+    <string name="screenrecord_keep_blur_label">Бүдгэрүүлэх эффектийг хадгалах</string>
+    <string name="screenrecord_keep_blur_summary">Бичлэг хийх явцад системийн UI дэвсгэр бүдэгрэлтийг хадгалах. Энэ нь гөлгөр байдлыг бууруулж болзошгүй юм.</string>
+</resources>

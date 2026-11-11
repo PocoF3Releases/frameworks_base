@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Enrollañ gant FPS uhelañ</string>
+    <string name="screenrecord_max_fps_summary">Lakaat ar feur frammoù enrollañ da glotañ gant ar feur freskaat skramm bremanel pa vez skoret gant an enkoder. Implijout a ra muioc\'h a c\'halloud hag a stokañ.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Diweredekaat ar c\'halite izelañ evit enrollañ gant an FPS uhelañ.</string>
+    <string name="screenrecord_keep_blur_label">Mirout an efedoù diverrañ</string>
+    <string name="screenrecord_keep_blur_summary">Mirout an disterañ foñs UI ar reizhiad e-pad an enrolladenn. Gant-se e c\'hallfe digreskiñ ar glebder.</string>
+</resources>

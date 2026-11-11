@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">በከፍተኛ FPS ይመዝግቡ</string>
+    <string name="screenrecord_max_fps_summary">በመቀየሪያው ሲደገፍ የምዝገባ ፍሬም ፍጥነቱን አሁን ካለው የማሳያ እድሳት ፍጥነት ጋር ያዛምዱ። ተጨማሪ ኃይል እና ማከማቻ ይጠቀማል።</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ከፍተኛ FPS ላይ ለመቅዳት ዝቅተኛ ጥራትን ያጥፉ።</string>
+    <string name="screenrecord_keep_blur_label">የማደብዘዙ ውጤቶችን አቆይ</string>
+    <string name="screenrecord_keep_blur_summary">በሚቀረጽበት ጊዜ የስርዓት UI ዳራ ብዥታ ጠብቅ። ይህ ለስላሳነት ሊቀንስ ይችላል.</string>
+</resources>

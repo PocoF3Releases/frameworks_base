@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Spela in med maximal FPS</string>
+    <string name="screenrecord_max_fps_summary">Matcha inspelningsbildhastigheten med den aktuella skärmens uppdateringsfrekvens när den stöds av kodaren. Använder mer kraft och lagring.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Stäng av lägre kvalitet för att spela in med maximal FPS.</string>
+    <string name="screenrecord_keep_blur_label">Behåll oskärpa effekter</string>
+    <string name="screenrecord_keep_blur_summary">Bevara bakgrundsoskärpa i systemgränssnittet under inspelning. Detta kan minska jämnheten.</string>
+</resources>

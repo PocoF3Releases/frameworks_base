@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">గరిష్ట FPS వద్ద రికార్డ్ చేయండి</string>
+    <string name="screenrecord_max_fps_summary">ఎన్‌కోడర్ మద్దతు ఇచ్చినప్పుడు రికార్డింగ్ ఫ్రేమ్ రేట్‌ను ప్రస్తుత డిస్‌ప్లే రిఫ్రెష్ రేట్‌తో సరిపోల్చండి. ఎక్కువ శక్తిని మరియు నిల్వను ఉపయోగిస్తుంది.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">గరిష్ట FPS వద్ద రికార్డ్ చేయడానికి తక్కువ నాణ్యతను ఆఫ్ చేయండి.</string>
+    <string name="screenrecord_keep_blur_label">బ్లర్ ప్రభావాలను ఉంచండి</string>
+    <string name="screenrecord_keep_blur_summary">రికార్డింగ్ చేస్తున్నప్పుడు సిస్టమ్ UI బ్యాక్‌గ్రౌండ్ బ్లర్‌ను సంరక్షించండి. ఇది సున్నితత్వాన్ని తగ్గించవచ్చు.</string>
+</resources>

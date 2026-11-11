@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Grava ao máximo de FPS</string>
+    <string name="screenrecord_max_fps_summary">Fai coincidir a frecuencia de fotogramas de gravación coa taxa de actualización da pantalla actual cando o admita o codificador. Usa máis enerxía e almacenamento.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Desactiva a calidade inferior para gravar ao máximo de FPS.</string>
+    <string name="screenrecord_keep_blur_label">Mantén os efectos de desenfoque</string>
+    <string name="screenrecord_keep_blur_summary">Conserva o desenfoque de fondo da IU do sistema durante a gravación. Isto pode reducir a suavidade.</string>
+</resources>

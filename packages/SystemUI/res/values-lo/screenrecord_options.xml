@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">ບັນທຶກຢູ່ທີ່ FPS ສູງສຸດ</string>
+    <string name="screenrecord_max_fps_summary">ຈັບຄູ່ອັດຕາເຟຣມການບັນທຶກກັບອັດຕາການໂຫຼດຫນ້າຈໍຄືນປະຈຸບັນໃນເວລາທີ່ສະຫນັບສະຫນູນໂດຍຕົວເຂົ້າລະຫັດ. ໃຊ້ພະລັງງານ ແລະບ່ອນເກັບມ້ຽນເພີ່ມເຕີມ.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">ປິດຄຸນນະພາບຕ່ໍາເພື່ອບັນທຶກຢູ່ທີ່ FPS ສູງສຸດ.</string>
+    <string name="screenrecord_keep_blur_label">ຮັກສາຜົນກະທົບທີ່ມົວ</string>
+    <string name="screenrecord_keep_blur_summary">ຮັກສາພື້ນຫຼັງ UI ຂອງລະບົບມົວໃນຂະນະທີ່ບັນທຶກ. ນີ້ອາດຈະຫຼຸດຜ່ອນຄວາມລຽບ.</string>
+</resources>

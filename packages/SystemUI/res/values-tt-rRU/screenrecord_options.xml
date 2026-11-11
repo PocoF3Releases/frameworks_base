@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Максималь FPS языгыз</string>
+    <string name="screenrecord_max_fps_summary">Анкодер ярдәмендә яздырылган рамка ставкасын хәзерге дисплей яңарту тизлегенә туры китерегез. Күч һәм саклауны күбрәк куллана.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Максималь FPS язу өчен түбән сыйфатны сүндерегез.</string>
+    <string name="screenrecord_keep_blur_label">Караңгы эффектларны саклагыз</string>
+    <string name="screenrecord_keep_blur_summary">Язганда система UI фонының төссезлеген саклагыз. Бу тигезлекне киметергә мөмкин.</string>
+</resources>

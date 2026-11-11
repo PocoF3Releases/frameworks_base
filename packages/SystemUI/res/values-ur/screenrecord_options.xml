@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">زیادہ سے زیادہ FPS پر ریکارڈ کریں۔</string>
+    <string name="screenrecord_max_fps_summary">ریکارڈنگ فریم ریٹ کو موجودہ ڈسپلے ریفریش ریٹ سے مماثل کریں جب انکوڈر کے ذریعہ تعاون کیا جائے۔ زیادہ طاقت اور اسٹوریج استعمال کرتا ہے۔</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">زیادہ سے زیادہ FPS پر ریکارڈ کرنے کے لیے کم معیار کو بند کریں۔</string>
+    <string name="screenrecord_keep_blur_label">دھندلا اثرات رکھیں</string>
+    <string name="screenrecord_keep_blur_summary">ریکارڈنگ کے دوران سسٹم UI پس منظر کی دھندلا پن کو محفوظ رکھیں۔ اس سے نرمی کم ہو سکتی ہے۔</string>
+</resources>

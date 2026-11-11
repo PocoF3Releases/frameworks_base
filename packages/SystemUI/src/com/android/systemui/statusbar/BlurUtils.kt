@@ -35,12 +35,12 @@ import android.view.SyncRtSurfaceTransactionApplier
 import android.view.ViewRootImpl
 import androidx.annotation.VisibleForTesting
 import com.android.systemui.Dumpable
-import com.android.systemui.Flags
 import com.android.systemui.dagger.SysUISingleton
 import com.android.systemui.dagger.qualifiers.Main
 import com.android.systemui.dump.DumpManager
 import com.android.systemui.keyguard.ui.transitions.BlurConfig
 import com.android.systemui.res.R
+import com.android.systemui.screenrecord.ScreenRecordingBlurState
 import java.io.PrintWriter
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -140,13 +140,16 @@ constructor(
         if (viewRootImpl == null || !viewRootImpl.surfaceControl.isValid) {
             return
         }
+        val blurSupported = supportsBlursOnWindows()
+        // Dream/transition callers can still request a nonzero radius while policy is disabled.
+        val appliedRadius = if (blurSupported) radius else 0
         updateTransactionApplier(viewRootImpl)
         val builder =
             SyncRtSurfaceTransactionApplier.SurfaceParams.Builder(viewRootImpl.surfaceControl)
-        if (shouldBlur(radius)) {
-            builder.withBackgroundBlurRadius(radius)
+        if (shouldBlur(appliedRadius, blurSupported)) {
+            builder.withBackgroundBlurRadius(appliedRadius)
             builder.withBackgroundBlurScale(scale)
-            if (lastAppliedBlur == 0 && radius != 0) {
+            if (lastAppliedBlur == 0 && appliedRadius != 0) {
                 Trace.instantForTrack(TRACE_TAG_APP, TRACK_NAME, "notifyRendererForGpuLoadUp")
                 viewRootImpl.notifyRendererForGpuLoadUp("applyBlur")
 
@@ -154,15 +157,12 @@ constructor(
                     earlyWakeupStartNextFrame(builder, APPLY_BLUR_TRACE_NAME)
                 }
             }
-            if (
-                earlyWakeupEnabled &&
-                    lastAppliedBlur != 0 &&
-                    radius == 0 &&
-                    !persistentEarlyWakeupRequired
-            ) {
-                earlyWakeupEndNextFrame(builder, APPLY_BLUR_TRACE_NAME)
-            }
-            lastAppliedBlur = radius
+            lastAppliedBlur = appliedRadius
+        }
+        // A prepared request can be cancelled before any non-zero blur is applied,
+        // including when blur support changes between preparation and this frame.
+        if (earlyWakeupEnabled && appliedRadius == 0 && !persistentEarlyWakeupRequired) {
+            earlyWakeupEndNextFrame(builder, APPLY_BLUR_TRACE_NAME)
         }
         builder.withOpaque(opaque)
         transactionApplier.scheduleApply(builder.build())
@@ -225,12 +225,12 @@ constructor(
         earlyWakeupEnabled = false
     }
 
-    private fun shouldBlur(radius: Int): Boolean {
-        return supportsBlursOnWindows() ||
-            ((Flags.notificationShadeBlur() || Flags.bouncerUiRevamp()) &&
-                supportsBlursOnWindowsBase() &&
-                lastAppliedBlur > 0 &&
-                radius == 0)
+    private fun shouldBlur(
+        radius: Int,
+        blurSupported: Boolean = supportsBlursOnWindows(),
+    ): Boolean {
+        return blurSupported ||
+            (supportsBlursOnWindowsBase() && lastAppliedBlur > 0 && radius == 0)
     }
 
     /**
@@ -241,10 +241,10 @@ constructor(
      */
     open fun supportsBlursOnWindows(): Boolean {
         return supportsBlursOnWindowsBase() &&
+            !ScreenRecordingBlurState.isRecordingActive() &&
             crossWindowBlurListeners != null &&
             crossWindowBlurListeners.isCrossWindowBlurEnabled
     }
-
     private fun supportsBlursOnWindowsBase(): Boolean {
         return CROSS_WINDOW_BLUR_SUPPORTED &&
             ActivityManager.isHighEndGfx() &&
@@ -269,7 +269,9 @@ constructor(
      */
     fun setPersistentEarlyWakeup(persistentWakeup: Boolean, viewRootImpl: ViewRootImpl?) {
         persistentEarlyWakeupRequired = persistentWakeup
-        if (viewRootImpl == null || !supportsBlursOnWindows()) return
+        // Releasing an existing wakeup request must also work after blur is disabled
+        // or the view is detached. Only acquiring a new request needs a valid target.
+        if (persistentWakeup && (viewRootImpl == null || !supportsBlursOnWindows())) return
 
         if (persistentEarlyWakeupRequired) {
             if (earlyWakeupEnabled) return

@@ -76,6 +76,15 @@ constructor(
         repository.restoreFrontCamera()
     }
 
+    val blurControlSupported: Boolean
+        get() = repository.blurControlSupported
+
+    var keepBlur: Boolean
+        set(value) {
+            repository.keepBlur = value
+        }
+        get() = repository.keepBlur
+
     var lowQuality: Boolean
         set(value) {
             repository.lowQuality = value
@@ -99,6 +108,14 @@ constructor(
             repository.keepScreenAwake = value
         }
         get() = repository.keepScreenAwake
+    val maxFpsSupported: Boolean
+        get() = repository.maxFpsSupported
+
+    var maxFps: Boolean
+        set(value) {
+            repository.maxFps = value
+        }
+        get() = repository.maxFps
 
     val canChangeAudioSource: StateFlow<Boolean> =
         serviceInteractor.status

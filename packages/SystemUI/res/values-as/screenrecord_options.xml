@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">সৰ্বোচ্চ FPS ত ৰেকৰ্ড কৰক</string>
+    <string name="screenrecord_max_fps_summary">ৰেকৰ্ডিং ফ্ৰেম হাৰ বৰ্তমান প্ৰদৰ্শন সতেজ হাৰৰ সৈতে মিলাওক যেতিয়া এনকোডাৰ দ্বাৰা সমৰ্থিত হয়। অধিক শক্তি আৰু সংৰক্ষণ ব্যৱহাৰ কৰে।</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">সৰ্বোচ্চ FPS ত ৰেকৰ্ড কৰিবলৈ নিম্ন মান বন্ধ কৰক।</string>
+    <string name="screenrecord_keep_blur_label">ব্লাৰ ইফেক্ট ৰাখক</string>
+    <string name="screenrecord_keep_blur_summary">ৰেকৰ্ডিং কৰাৰ সময়ত চিস্টেম UI পটভূমি অস্পষ্ট সংৰক্ষণ কৰক। ইয়াৰ ফলত মসৃণতা হ্ৰাস পাব পাৰে।</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">سجل بأقصى عدد من الإطارات في الثانية</string>
+    <string name="screenrecord_max_fps_summary">قم بمطابقة معدل إطارات التسجيل مع معدل تحديث العرض الحالي عندما يكون مدعومًا بواسطة برنامج التشفير. يستخدم المزيد من الطاقة والتخزين.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">قم بإيقاف تشغيل الجودة المنخفضة للتسجيل بأقصى عدد من الإطارات في الثانية.</string>
+    <string name="screenrecord_keep_blur_label">الحفاظ على آثار طمس</string>
+    <string name="screenrecord_keep_blur_summary">الحفاظ على طمس خلفية واجهة المستخدم للنظام أثناء التسجيل. هذا قد يقلل من النعومة.</string>
+</resources>

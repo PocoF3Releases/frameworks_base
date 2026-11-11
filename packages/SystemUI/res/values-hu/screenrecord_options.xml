@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Rögzítés maximális FPS-sel</string>
+    <string name="screenrecord_max_fps_summary">Ha a kódoló támogatja, illessze a felvétel képkockasebességét az aktuális képernyő-frissítési gyakorisághoz. Több energiát és tárhelyet használ.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Kapcsolja ki az alacsonyabb minőséget a maximális FPS-sel történő rögzítéshez.</string>
+    <string name="screenrecord_keep_blur_label">Tartsa meg az elmosódási effektusokat</string>
+    <string name="screenrecord_keep_blur_summary">A rendszer felhasználói felületének elmosódott hátterének megőrzése felvétel közben. Ez csökkentheti a simaságot.</string>
+</resources>

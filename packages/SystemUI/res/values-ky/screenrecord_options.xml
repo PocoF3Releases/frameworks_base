@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Максималдуу FPS менен жазыңыз</string>
+    <string name="screenrecord_max_fps_summary">Кодер колдогон учурда жаздыруу кадр ылдамдыгын учурдагы дисплейдин жаңыртуу ылдамдыгына дал келтириңиз. Көбүрөөк кубаттуулукту жана сактагычты колдонот.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Максималдуу FPS менен жаздыруу үчүн Төмөнкү сапатты өчүрүңүз.</string>
+    <string name="screenrecord_keep_blur_label">бүдөмүк эффекттерди сактаңыз</string>
+    <string name="screenrecord_keep_blur_summary">Жазып жатканда Системанын UI фонунун бүдөмүктүгүн сактаңыз. Бул жылмакай азайтышы мүмкүн.</string>
+</resources>

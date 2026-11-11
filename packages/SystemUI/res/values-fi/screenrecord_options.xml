@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Tallenna maksimi FPS:llä</string>
+    <string name="screenrecord_max_fps_summary">Yhdistä tallennuksen kuvataajuus nykyiseen näytön virkistystaajuuteen, jos kooderi tukee sitä. Kuluttaa enemmän virtaa ja tallennustilaa.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Laita Heikko laatu pois päältä tallentaaksesi suurimmalla FPS:llä.</string>
+    <string name="screenrecord_keep_blur_label">Säilytä sumennustehosteet</string>
+    <string name="screenrecord_keep_blur_summary">Säilytä järjestelmän käyttöliittymän taustan sumeus tallennuksen aikana. Tämä voi vähentää sileyttä.</string>
+</resources>
