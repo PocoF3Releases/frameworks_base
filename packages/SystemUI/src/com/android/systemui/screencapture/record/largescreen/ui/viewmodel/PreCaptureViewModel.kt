@@ -384,6 +384,10 @@ constructor(
                         recordingTarget == null &&
                             toolbarViewModel.frontCameraSupported &&
                             toolbarViewModel.recordParametersViewModel.shouldShowFrontCamera,
+                    maxFps =
+                        toolbarViewModel.recordParametersViewModel.maxFpsSupported &&
+                            !toolbarViewModel.recordParametersViewModel.lowQuality &&
+                            toolbarViewModel.recordParametersViewModel.maxFps,
                 )
             )
         }

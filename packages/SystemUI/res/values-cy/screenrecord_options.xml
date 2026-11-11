@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Cofnod ar uchafswm FPS</string>
+    <string name="screenrecord_max_fps_summary">Cydweddwch y gyfradd ffrâm recordio â\'r gyfradd adnewyddu arddangos gyfredol pan gaiff ei chefnogi gan yr amgodiwr. Yn defnyddio mwy o bŵer a storfa.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Diffodd ansawdd is i gofnodi ar uchafswm FPS.</string>
+    <string name="screenrecord_keep_blur_label">Cadwch effeithiau aneglur</string>
+    <string name="screenrecord_keep_blur_summary">Cadw niwl cefndir UI System wrth recordio. Gall hyn leihau llyfnder.</string>
+</resources>

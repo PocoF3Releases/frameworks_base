@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Taka upp á hámarks FPS</string>
+    <string name="screenrecord_max_fps_summary">Passaðu rammahraða upptöku við núverandi endurnýjunarhraða skjásins þegar það er studd af kóðara. Notar meiri orku og geymslupláss.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Slökktu á lægri gæðum til að taka upp á hámarks FPS.</string>
+    <string name="screenrecord_keep_blur_label">Haltu óskýr áhrifum</string>
+    <string name="screenrecord_keep_blur_summary">Varðveittu óskýrleika í bakgrunni viðmóts kerfis meðan á upptöku stendur. Þetta getur dregið úr sléttleika.</string>
+</resources>

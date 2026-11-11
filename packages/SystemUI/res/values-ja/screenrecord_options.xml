@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">最大FPSで録画する</string>
+    <string name="screenrecord_max_fps_summary">エンコーダでサポートされている場合は、録画フレーム レートを現在の表示リフレッシュ レートに合わせます。より多くの電力とストレージを使用します。</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">最大 FPS で録画するには、「低品質」をオフにします。</string>
+    <string name="screenrecord_keep_blur_label">ぼかし効果を維持する</string>
+    <string name="screenrecord_keep_blur_summary">録画中にシステム UI の背景のぼかしを維持します。滑らかさが低下する可能性があります。</string>
+</resources>

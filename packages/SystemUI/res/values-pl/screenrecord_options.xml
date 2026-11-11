@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Nagrywaj z maksymalną liczbą klatek na sekundę</string>
+    <string name="screenrecord_max_fps_summary">Dopasuj częstotliwość klatek nagrywania do bieżącej częstotliwości odświeżania wyświetlacza, jeśli jest obsługiwana przez koder. Zużywa więcej energii i pamięci.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Wyłącz opcję Niższa jakość, aby nagrywać z maksymalną liczbą klatek na sekundę.</string>
+    <string name="screenrecord_keep_blur_label">Zachowaj efekty rozmycia</string>
+    <string name="screenrecord_keep_blur_summary">Zachowaj rozmycie tła interfejsu użytkownika systemu podczas nagrywania. Może to zmniejszyć gładkość.</string>
+</resources>

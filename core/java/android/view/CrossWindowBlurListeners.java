@@ -51,6 +51,7 @@ public final class CrossWindowBlurListeners {
     private final ArrayMap<Consumer<Boolean>, Executor> mListeners = new ArrayMap();
     private boolean mInternalListenerAttached = false;
     private boolean mCrossWindowBlurEnabled;
+    private boolean mBlurSuppressedForProcess;
 
     private CrossWindowBlurListeners() {}
 
@@ -75,7 +76,37 @@ public final class CrossWindowBlurListeners {
     public boolean isCrossWindowBlurEnabled() {
         synchronized (sLock) {
             attachInternalListenerIfNeededLocked();
-            return mCrossWindowBlurEnabled;
+            return isBlurEnabledLocked();
+        }
+    }
+
+    /**
+     * Temporarily suppresses cross-window blur in this process only. The system's
+     * enabled state and user settings are retained for restoration.
+     */
+    public void setBlurSuppressedForProcess(boolean suppressed) {
+        synchronized (sLock) {
+            final boolean wasEnabled = isBlurEnabledLocked();
+            mBlurSuppressedForProcess = suppressed;
+            final boolean enabled = isBlurEnabledLocked();
+            if (wasEnabled != enabled) {
+                notifyListenersLocked(enabled);
+            }
+        }
+    }
+
+    private boolean isBlurEnabledLocked() {
+        return mCrossWindowBlurEnabled && !mBlurSuppressedForProcess;
+    }
+
+    private void notifyListenersLocked(boolean enabled) {
+        // A direct listener can unregister or change policy during delivery.
+        final ArrayMap<Consumer<Boolean>, Executor> listeners = new ArrayMap<>(mListeners);
+        for (int i = 0; i < listeners.size(); i++) {
+            if (enabled != isBlurEnabledLocked()) {
+                break;
+            }
+            notifyListener(listeners.keyAt(i), listeners.valueAt(i), enabled);
         }
     }
 
@@ -88,7 +119,7 @@ public final class CrossWindowBlurListeners {
             attachInternalListenerIfNeededLocked();
 
             mListeners.put(listener, executor);
-            notifyListener(listener, executor, mCrossWindowBlurEnabled);
+            notifyListener(listener, executor, isBlurEnabledLocked());
         }
     }
 
@@ -131,13 +162,16 @@ public final class CrossWindowBlurListeners {
         @Override
         public void onCrossWindowBlurEnabledChanged(boolean enabled) {
             synchronized (sLock) {
+                final boolean wasEnabled = isBlurEnabledLocked();
                 mCrossWindowBlurEnabled = enabled;
+                final boolean effectiveEnabled = isBlurEnabledLocked();
+                if (wasEnabled == effectiveEnabled) {
+                    return;
+                }
 
                 final long token = Binder.clearCallingIdentity();
                 try {
-                    for (int i = 0; i < mListeners.size(); i++) {
-                        notifyListener(mListeners.keyAt(i), mListeners.valueAt(i), enabled);
-                    }
+                    notifyListenersLocked(effectiveEnabled);
                 } finally {
                     Binder.restoreCallingIdentity(token);
                 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Grabar a los FPS máximos</string>
+    <string name="screenrecord_max_fps_summary">Axusta la frecuencia de fotogrames de la grabación a la frecuencia d’actualización de la pantalla cuando’l codificador lo permita. Consume más enerxía y espaciu de almacenamientu.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Desactiva «Calidá baxa» pa grabar a los FPS máximos.</string>
+    <string name="screenrecord_keep_blur_label">Caltener los efeutos de desenfoque</string>
+    <string name="screenrecord_keep_blur_summary">Caltién el desenfoque del fondu de la interfaz del sistema durante la grabación. Esto pue reducir la fluidez.</string>
+</resources>

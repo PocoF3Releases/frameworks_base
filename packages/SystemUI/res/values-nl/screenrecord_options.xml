@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Neem op met maximale FPS</string>
+    <string name="screenrecord_max_fps_summary">Zorg ervoor dat de framesnelheid van de opname overeenkomt met de huidige vernieuwingsfrequentie van het scherm, indien ondersteund door de encoder. Gebruikt meer stroom en opslag.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Schakel Lagere kwaliteit uit om op maximale FPS op te nemen.</string>
+    <string name="screenrecord_keep_blur_label">Behoud vervagingseffecten</string>
+    <string name="screenrecord_keep_blur_summary">Behoud de achtergrondonscherpte van de systeeminterface tijdens het opnemen. Dit kan de gladheid verminderen.</string>
+</resources>

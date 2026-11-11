@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">अधिकतम FPS मा रेकर्ड गर्नुहोस्</string>
+    <string name="screenrecord_max_fps_summary">एन्कोडरद्वारा समर्थित हुँदा रेकर्डिङ फ्रेम दरलाई हालको डिस्प्ले रिफ्रेस दरसँग मिलाउनुहोस्। अधिक शक्ति र भण्डारण प्रयोग गर्दछ।</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">अधिकतम FPS मा रेकर्ड गर्न तल्लो गुणस्तर बन्द गर्नुहोस्।</string>
+    <string name="screenrecord_keep_blur_label">ब्लर प्रभावहरू राख्नुहोस्</string>
+    <string name="screenrecord_keep_blur_summary">रेकर्डिङ गर्दा प्रणाली UI पृष्ठभूमि ब्लर सुरक्षित गर्नुहोस्। यसले चिल्लोपन कम गर्न सक्छ।</string>
+</resources>

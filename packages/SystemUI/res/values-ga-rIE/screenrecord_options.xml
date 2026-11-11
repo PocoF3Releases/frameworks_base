@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Taifead ag CCT uasta</string>
+    <string name="screenrecord_max_fps_summary">Meaitseáil an ráta fráma taifeadta leis an ráta athnuachana taispeána reatha nuair a thacaíonn an t-ionchódóir leis. Úsáideann sé níos mó cumhachta agus stórála.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Múch Cáilíocht níos ísle chun taifead a dhéanamh ag CCT uasta.</string>
+    <string name="screenrecord_keep_blur_label">Coinnigh éifeachtaí doiléir</string>
+    <string name="screenrecord_keep_blur_summary">Caomhnaigh Doiléirigh chúlra Chomhéadain an Chórais agus tú ag taifeadadh. D\'fhéadfadh sé seo go laghdódh sé go réidh.</string>
+</resources>

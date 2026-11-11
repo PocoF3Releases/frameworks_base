@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="screenrecord_max_fps_label">Записвайте при максимален FPS</string>
+    <string name="screenrecord_max_fps_summary">Съпоставете кадровата честота на записа с текущата честота на опресняване на дисплея, когато се поддържа от енкодера. Използва повече енергия и съхранение.</string>
+    <string name="screenrecord_max_fps_low_quality_disabled">Изключете По-ниско качество, за да записвате при максимална FPS.</string>
+    <string name="screenrecord_keep_blur_label">Запазете ефектите на размазване</string>
+    <string name="screenrecord_keep_blur_summary">Запазете замъгляването на фона на потребителския интерфейс на системата по време на запис. Това може да намали гладкостта.</string>
+</resources>
